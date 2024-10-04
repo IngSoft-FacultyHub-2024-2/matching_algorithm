@@ -5,8 +5,8 @@ from pathlib import Path
 root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
-from matching_algorithm.matching_algorithm import solve_timetable
-from matching_algorithm.quality_assurance.check_conflicts import are_conflicts
+from src.matching_algorithm.matching_algorithm import solve_timetable
+from src.matching_algorithm.quality_assurance.check_conflicts import are_conflicts
 
 class TestSolveTimetable(unittest.TestCase):
     def test_no_teachers_no_classes(self):

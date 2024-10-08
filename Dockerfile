@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the entire application into the container
-COPY ./src ./src
+COPY . .
 
 # Set the entrypoint to bash
 ENTRYPOINT ["/bin/bash"]

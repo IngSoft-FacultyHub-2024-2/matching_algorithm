@@ -21,7 +21,9 @@ subjects = [
     {"subject": "IngSoft1", "role": ["Theory"]},
     {"subject": "Da1", "role": ["Theory", "Practice"]},
     {"subject": "Da2", "role": ["Theory", "Practice"]},
-    {"subject": "Algorithms", "role": ["Theory", "Practice"]}
+    {"subject": "Algorithms", "role": ["Theory", "Practice"]},
+    {"subject": "Algorithms2", "role": ["Theory", "Practice"]},
+    {"subject": "RandomSubject", "role": ["Theory"]}
 ]
 
 class TeachersGenerator():
@@ -182,7 +184,7 @@ if __name__ == "__main__":
     for issue in issues:
         print(f"- {issue}")
 
-    check_solution(teachers, classes, result, unassigned)
+    check_solution(teachers, classes, result, unassigned, partially_unassigned=conflicts["partially_unassigned"])   
 
     results_path = root_folder / "json_input_tests"
     results_path.mkdir(exist_ok=True)

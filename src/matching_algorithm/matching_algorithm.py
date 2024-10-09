@@ -40,9 +40,9 @@ def solve_timetable(teachers, classes):
         model.Add(sum(teacher_assignments) == 0).OnlyEnforceIf(has_any_class[teacher].Not())
 
     # Constraints
-    conflicts = {"Teacher_without_any_classes": [], 
-                 "Teacher_has_more_than_weekly_hours": [], 
-                 "Classes_without_teachers": [],
+    conflicts = {"teacher_without_any_classes": [], 
+                 "teacher_has_more_than_weekly_hours": [], 
+                 "classes_without_teachers": [],
                  "partially_unassigned": []}
     seniority_preference = model.NewIntVar(0, 1000000, 'seniority_preference')
     seniority_terms = []
@@ -105,7 +105,7 @@ def solve_timetable(teachers, classes):
                                               teacher_info['seniority'])
 
             if not assigned_teachers:
-                conflicts["Classes_without_teachers"].append({
+                conflicts["classes_without_teachers"].append({
                     "class_name": class_name, 
                     "role": subclass['role'], 
                     "subject": class_info['subject']
@@ -270,12 +270,12 @@ def solve_timetable(teachers, classes):
                 if teacher in assigned_teachers
             )
             if teacher_hours > teacher_info['weekly_hours_max_work']:
-                conflicts['Teacher_has_more_than_weekly_hours'].append({"teacher": teacher, "assigned_hours": teacher_hours, "weekly_hours_max_work":teacher_info['weekly_hours_max_work']})
+                conflicts['teacher_has_more_than_weekly_hours'].append({"teacher": teacher, "assigned_hours": teacher_hours, "weekly_hours_max_work":teacher_info['weekly_hours_max_work']})
 
         # Add information about teachers without any classes
         teachers_without_classes = [teacher for teacher in teachers if not solver.Value(has_any_class[teacher])]
         if teachers_without_classes:
-            conflicts['Teacher_without_any_classes'] = teachers_without_classes
+            conflicts['teacher_without_any_classes'] = teachers_without_classes
         
         return result, unassigned, conflicts
     else:

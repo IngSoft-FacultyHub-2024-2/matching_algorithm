@@ -250,7 +250,7 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertFalse(are_conflicts(result, teachers, classes))
         self.assertEqual(unassigned, [])
         for k, v in conflicts.items():
-            if k == "Teacher_without_any_classes":
+            if k == "teacher_without_any_classes":
                 self.assertEqual(v, ["teacher3"])
             else:
                 self.assertEqual(v, [])
@@ -311,7 +311,7 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertFalse(are_conflicts(result, teachers, classes))
         self.assertEqual(unassigned, [])
         for k, v in conflicts.items():
-            if k == "Teacher_without_any_classes":
+            if k == "teacher_without_any_classes":
                 self.assertEqual(v, ["teacher1"])
             else:
                 self.assertEqual(v, [])
@@ -376,7 +376,7 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertFalse(are_conflicts(result, teachers, classes))
         self.assertEqual(unassigned, [])
         for k, v in conflicts.items():
-            if k == "Teacher_without_any_classes":
+            if k == "teacher_without_any_classes":
                 self.assertEqual(v, ["teacher3"])
             else:
                 self.assertEqual(v, [])
@@ -452,7 +452,7 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertFalse(are_conflicts(result, teachers, classes))
         self.assertEqual(unassigned, [])
         for k, v in conflicts.items():
-            if k == "Teacher_without_any_classes":
+            if k == "teacher_without_any_classes":
                 self.assertEqual(v, ["teacher3"])
             else:
                 self.assertEqual(v, [])
@@ -527,43 +527,46 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertFalse(are_conflicts(result, teachers, classes))
         self.assertEqual(unassigned, [])
         for k, v in conflicts.items():
-            if k == "Teacher_without_any_classes":
+            if k == "teacher_without_any_classes":
                 self.assertEqual(v, ["teacher1"])
             else:
                 self.assertEqual(v, [])
 
-    #TODO: DECIDE WHAT TO DO IN THIS SITUATION
-    # def test_constrains_teacher_can_be_assigned_at_most_once_to_each_subclass(self):
-    #     teachers = {
-    #         "teacher1": {
-    #             "subject_he_know_how_to_teach": [
-    #                 {"subject": "Arq1", "role": ["Theory"], "seniority": 3},
-    #             ],
-    #             "available_times": {
-    #                 "Monday": [9, 10, 11], 
-    #                 "Tuesday": [9, 10],
-    #                 "Friday": [9, 10, 11, 12]
-    #             },
-    #             "weekly_hours_max_work": 10
-    #         }
-    #     }
-    #     classes = {
-    #         "class1": {
-    #             "subject": "Arq1",
-    #             "subClasses": [
-    #                 {
-    #                     "role": "Theory",
-    #                     "times": {"Monday": [9, 10], "Friday": [9, 10]},
-    #                     "num_teachers": 2
-    #                 }
-    #             ]
-    #         },
-    #     }
-    #     result, unassigned, conflicts = solve_timetable(teachers, classes)
-    #     self.assertEqual(result, {"class1": {'Theory': []}})
-    #     self.assertEqual(unassigned, [("class1", "Theory")])
-    #     for k, v in conflicts.items():
-    #         self.assertEqual(v, [])
+    def test_constrains_teacher_can_be_assigned_at_most_once_to_each_subclass(self):
+        teachers = {
+            "teacher1": {
+                "seniority": 3,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Theory"]},
+                ],
+                "available_times": {
+                    "Monday": [9, 10, 11], 
+                    "Tuesday": [9, 10],
+                    "Friday": [9, 10, 11, 12]
+                },
+                "weekly_hours_max_work": 10
+            }
+        }
+        classes = {
+            "class1": {
+                "subject": "Arq1",
+                "subClasses": [
+                    {
+                        "role": "Theory",
+                        "times": {"Monday": [9, 10], "Friday": [9, 10]},
+                        "num_teachers": 2
+                    }
+                ]
+            },
+        }
+        result, unassigned, conflicts = solve_timetable(teachers, classes)
+        self.assertEqual(result, {"class1": {'Theory': ["teacher1"]}})
+        self.assertEqual(unassigned, [])
+        for k, v in conflicts.items():
+            if k == "partially_unassigned":
+                self.assertEqual(v, [{"class_name": "class1", "role": "Theory", "assigned": 1, "needed": 2}])
+            else:
+                self.assertEqual(v, [])
 
     def test_two_teacher_two_class_two_days_match(self):
         teachers = {
@@ -610,7 +613,7 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertEqual(result, {'class1': {'Theory': []}, "class2": {'Theory': ["teacher1"]}})
         self.assertFalse(are_conflicts(result, teachers, classes))
         self.assertEqual(unassigned, [('class1', 'Theory')])
-        self.assertEqual(conflicts["Teacher_without_any_classes"], ["teacher2"])
+        self.assertEqual(conflicts["teacher_without_any_classes"], ["teacher2"])
 
     def test_one_teacher_one_class_no_match_because_subject(self):
         teachers = {
@@ -639,7 +642,7 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertEqual(result, {"class1": {'Theory': []}})
         self.assertFalse(are_conflicts(result, teachers, classes))
         self.assertEqual(unassigned, [('class1', 'Theory')])
-        self.assertEqual(conflicts["Teacher_without_any_classes"], ["teacher1"])
+        self.assertEqual(conflicts["teacher_without_any_classes"], ["teacher1"])
 
     def test_multiple_teachers_classes(self):
         teachers = {
@@ -919,7 +922,7 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertFalse(are_conflicts(result, teachers, classes))
         self.assertEqual(unassigned, [])
         for k, v in conflicts.items():
-            if k == "Teacher_without_any_classes":
+            if k == "teacher_without_any_classes":
                 self.assertEqual(v, ["teacher3"])
             else:
                 self.assertEqual(v, [])

@@ -13,10 +13,19 @@ def solve_timetable(teachers, classes):
 
     # Create 'is_assigned' variables for each subclass
     is_assigned = {}
+    partially_assigned = {}
     for class_name, class_info in classes.items():
         for subclass in class_info['subClasses']:
-            is_assigned[(class_name, subclass['role'])] = model.NewBoolVar(f'is_assigned_{class_name}_{subclass["role"]}')
-
+            if subclass['num_teachers'] > 1:
+                # For multi-teacher classes, create variables for partial assignment
+                for i in range(1, subclass['num_teachers'] + 1):
+                    partially_assigned[(class_name, subclass['role'], i)] = model.NewBoolVar(
+                        f'partially_assigned_{class_name}_{subclass["role"]}_{i}')
+            
+            # Keep the original is_assigned variable for fully assigned classes
+            is_assigned[(class_name, subclass['role'])] = model.NewBoolVar(
+                f'is_assigned_{class_name}_{subclass["role"]}')
+            
     # Create 'has_any_class' variables for each teacher
     has_any_class = {}
     for teacher in teachers:
@@ -31,17 +40,34 @@ def solve_timetable(teachers, classes):
         model.Add(sum(teacher_assignments) == 0).OnlyEnforceIf(has_any_class[teacher].Not())
 
     # Constraints
-    conflicts = {"Teacher_without_any_classes": [], "Teacher_has_more_than_weekly_hours": [], "Classes_without_teachers": []}
+    conflicts = {"Teacher_without_any_classes": [], 
+                 "Teacher_has_more_than_weekly_hours": [], 
+                 "Classes_without_teachers": [],
+                 "partially_unassigned": []}
     seniority_preference = model.NewIntVar(0, 1000000, 'seniority_preference')
     seniority_terms = []
     
     for class_name, class_info in classes.items():
         for subclass in class_info['subClasses']:
+            num_teachers_needed = subclass['num_teachers']
             # A subclass is assigned if exactly num_teachers are assigned to it
-            model.Add(sum(assignments[(teacher, class_name, subclass['role'], i)] 
-                          for teacher in teachers 
-                          for i in range(subclass['num_teachers'])) == 
-                      subclass['num_teachers'] * is_assigned[(class_name, subclass['role'])])
+            actual_teachers = sum(assignments[(teacher, class_name, subclass['role'], i)]
+                                 for teacher in teachers
+                                 for i in range(num_teachers_needed))
+            
+            # Constraint for full assignment
+            model.Add(actual_teachers == num_teachers_needed).OnlyEnforceIf(
+                is_assigned[(class_name, subclass['role'])])
+            model.Add(actual_teachers < num_teachers_needed).OnlyEnforceIf(
+                is_assigned[(class_name, subclass['role'])].Not())
+            
+            # Constraints for partial assignments if multiple teachers are needed
+            if num_teachers_needed > 1:
+                for i in range(1, num_teachers_needed + 1):
+                    model.Add(actual_teachers >= i).OnlyEnforceIf(
+                        partially_assigned[(class_name, subclass['role'], i)])
+                    model.Add(actual_teachers < i).OnlyEnforceIf(
+                        partially_assigned[(class_name, subclass['role'], i)].Not())
             
             # Each teacher can be assigned at most once to each subclass
             for teacher in teachers:
@@ -173,17 +199,27 @@ def solve_timetable(teachers, classes):
     # Multi-objective optimization
     teacher_assignment_preference = sum(has_any_class.values())
     total_assigned = sum(is_assigned.values())
+    partial_assignment_preference = sum(
+        partially_assigned[(class_name, subclass['role'], i)] * i
+        for class_name, class_info in classes.items()
+        for subclass in class_info['subClasses']
+        if subclass['num_teachers'] > 1
+        for i in range(1, subclass['num_teachers'])
+    )
 
     
     # Priorities: 
     # 1. Maximize total assigned classes (weight: 1000000)
-    # 2. Try to give each teacher at least one class (weight: 100000)
-    # 3. Maximize group preferences (weight: 10000)
-    # 4. Maximize seniority preferences (weight: 1)
-    model.Maximize(total_assigned * 100000 + 
-                   teacher_assignment_preference * 10000 + 
-                   group_preference * 100 + 
+    # 2. Maximize total assigned of partial classes (need 2 professors but only one is assigned) (weight: 100000)
+    # 3. Try to give each teacher at least one class (weight: 10000)
+    # 4. Maximize group preferences (weight: 10000)
+    # 5. Maximize seniority preferences (weight: 1)   
+    model.Maximize(total_assigned * 1000000 +
+                   partial_assignment_preference * 100000 +
+                   teacher_assignment_preference * 10000 +
+                   group_preference * 100 +
                    seniority_preference)
+
 
     # Solve the model
     solver = cp_model.CpSolver()
@@ -201,11 +237,22 @@ def solve_timetable(teachers, classes):
             result[class_name] = {}
             for subclass in class_info['subClasses']:
                 result[class_name][subclass['role']] = []
+                assigned_teachers = []
                 for teacher in teachers:
                     for i in range(subclass['num_teachers']):
                         if solver.Value(assignments[(teacher, class_name, subclass['role'], i)]):
-                            result[class_name][subclass['role']].append(teacher)
-        
+                            assigned_teachers.append(teacher)
+                
+                result[class_name][subclass['role']] = assigned_teachers
+                
+                if len(assigned_teachers) < subclass['num_teachers'] and len(assigned_teachers) > 0:
+                    conflicts["partially_unassigned"].append({
+                        'class_name': class_name,
+                        'role': subclass['role'],
+                        'assigned': len(assigned_teachers),
+                        'needed': subclass['num_teachers']
+                    })
+
         # Check for unassigned subclasses
         unassigned = [(class_name, subclass['role']) 
                       for class_name, class_info in classes.items() 

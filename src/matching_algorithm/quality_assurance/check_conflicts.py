@@ -5,7 +5,7 @@ def are_conflicts(assignment, teachers, classes):
         for selected_role, teachers_assigned in class_assigned_teachers.items():
             for teacher_name in teachers_assigned:
                 if not teacher_can_teach_class(teachers[teacher_name], classes[class_name], selected_role):
-                    print("teacher_can_teach_class")
+                    print("teacher_cannot_teach_class")
                     return True
         
     # iterate over all teachers check if they have more than weekly hours and if they teach more than one class at the same time

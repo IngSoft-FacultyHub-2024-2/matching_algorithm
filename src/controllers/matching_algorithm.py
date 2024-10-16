@@ -13,11 +13,8 @@ router = APIRouter()
             #   })
             )
 async def assign_teachers_to_classes(data: AssignmentRequestModel):
-
-    teachers = data.teachers
-    classes = data.classes
-    print(dict(teachers))
-    print(dict(teachers)["teacher1"])
-
-    print(classes)
-    return {"message": "Assignment successful"}
+    data = data.dict()
+    teachers = data["teachers"]
+    classes = data["classes"]
+    result, unassigned, conflicts = solve_timetable(teachers, classes)
+    return {"matches": result, "unassigned": unassigned, "conflicts": conflicts}

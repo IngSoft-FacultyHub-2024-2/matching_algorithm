@@ -123,6 +123,8 @@ def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassM
                 # Teacher must be available at the class times
                 is_available = True
                 for day, times in subclass["times"].items():
+                    if times is None:
+                        continue
                     for time in times:
                         if time not in teacher_info["available_times"].get(day, []):
                             for i in range(subclass["num_teachers"]):
@@ -167,7 +169,7 @@ def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassM
                     (class_name, subclass["role"], subclass["num_teachers"])
                     for class_name, class_info in classes.items()
                     for subclass in class_info["subClasses"]
-                    if day in subclass["times"] and time in subclass["times"][day]
+                    if subclass["times"][day] is not None and time in subclass["times"][day]
                 ]
                 if conflicting_subclasses:
                     model.Add(
@@ -183,7 +185,7 @@ def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassM
     for teacher, teacher_info in teachers.items():
         weekly_hours = sum(
             assignments[(teacher, class_name, subclass["role"], i)]
-            * sum(len(times) for times in subclass["times"].values())
+            * sum(len(times) for times in subclass["times"].values() if times is not None)
             for class_name, class_info in classes.items()
             for subclass in class_info["subClasses"]
             for i in range(subclass["num_teachers"])
@@ -197,6 +199,8 @@ def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassM
     group_matches = []
 
     for teacher, teacher_info in teachers.items():
+        if teacher_info["groups"] is None:
+            continue
         for group in teacher_info.get("groups", []):
             for class_name, class_info in classes.items():
                 if class_info["subject"] == group["subject"]:
@@ -350,7 +354,7 @@ def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassM
         # Check for weekly hours conflicts
         for teacher, teacher_info in teachers.items():
             teacher_hours = sum(
-                len(subclass["times"].get(day, []))
+                len(subclass["times"].get(day, [])) if subclass["times"].get(day) else 0
                 for class_name, class_assignments in result.items()
                 for role, assigned_teachers in class_assignments.items()
                 for subclass in classes[class_name]["subClasses"]

@@ -1,8 +1,9 @@
 from typing import Optional
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, constr
 
 from .available_times_model import AvailableTimesModel
 from .subject_model import SubjectModel
+from .role_model import RoleType
 from .group_model import GroupModel
 
 class TeacherModel(BaseModel):

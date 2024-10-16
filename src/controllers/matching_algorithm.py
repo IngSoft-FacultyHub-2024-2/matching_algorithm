@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Body
 
-from src.matching_algorithm.models import TeacherModel
-
+from .DTO.in_models.assignment_request_model import AssignmentRequestModel
+from src.matching_algorithm import solve_timetable
 router = APIRouter()
 
 @router.post("/", summary="Assign teachers to classes",
@@ -12,5 +12,12 @@ router = APIRouter()
             #       400: {"description": "Bad Request"},
             #   })
             )
-async def assign_teachers_to_classes(teachers: dict[str, TeacherModel], classes):
-    pass
+async def assign_teachers_to_classes(data: AssignmentRequestModel):
+
+    teachers = data.teachers
+    classes = data.classes
+    print(dict(teachers))
+    print(dict(teachers)["teacher1"])
+
+    print(classes)
+    return {"message": "Assignment successful"}

@@ -1,6 +1,6 @@
 import unittest
 
-from src.matching_algorithm.quality_assurance.check_conflicts import are_conflicts
+from src.matching_algorithm.quality_assurance import are_conflicts
 
 class TestCheckConflicts(unittest.TestCase):
 

@@ -8,9 +8,9 @@ root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
 from src.matching_algorithm.matching_algorithm import solve_timetable
-from src.matching_algorithm.quality_assurance.check_conflicts import are_conflicts
-from src.matching_algorithm.quality_assurance.diagnose_infeasibility import diagnose_infeasibility
-from src.matching_algorithm.quality_assurance.validate_unassigned import check_solution
+from src.matching_algorithm.quality_assurance import are_conflicts
+from src.matching_algorithm.quality_assurance import diagnose_infeasibility
+from src.matching_algorithm.quality_assurance import check_solution
 
 
 subjects = [

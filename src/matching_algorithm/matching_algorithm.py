@@ -1,7 +1,8 @@
 from ortools.sat.python import cp_model
 
+from .models import TeacherModel, ClassModel
 
-def solve_timetable(teachers, classes):
+def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassModel]):
     model = cp_model.CpModel()
 
     # Create variables

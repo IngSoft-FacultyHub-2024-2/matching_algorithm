@@ -1,1 +1,2 @@
-from teacher import RoleModel, SubjectModel, AvailableTimesModel, GroupModel, TeacherModel
+from .teacher_model import TeacherModel
+from .class_model import ClassModel

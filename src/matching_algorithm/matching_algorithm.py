@@ -1,8 +1,6 @@
 from ortools.sat.python import cp_model
 
-from .models import TeacherModel, ClassModel
-
-def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassModel]):
+def solve_timetable(teachers, classes):
     model = cp_model.CpModel()
 
     # Create variables
@@ -169,7 +167,7 @@ def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassM
                     (class_name, subclass["role"], subclass["num_teachers"])
                     for class_name, class_info in classes.items()
                     for subclass in class_info["subClasses"]
-                    if subclass["times"][day] is not None and time in subclass["times"][day]
+                    if subclass["times"].get(day, None) is not None and time in subclass["times"][day]
                 ]
                 if conflicting_subclasses:
                     model.Add(
@@ -199,9 +197,9 @@ def solve_timetable(teachers: dict[str, TeacherModel], classes: dict[str, ClassM
     group_matches = []
 
     for teacher, teacher_info in teachers.items():
-        if teacher_info["groups"] is None:
+        if teacher_info.get("groups", None) is None:
             continue
-        for group in teacher_info.get("groups", []):
+        for group in teacher_info["groups"]:
             for class_name, class_info in classes.items():
                 if class_info["subject"] == group["subject"]:
                     # For each group configuration, create a new boolean variable

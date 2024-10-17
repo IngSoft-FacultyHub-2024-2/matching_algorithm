@@ -1,3 +1,3 @@
 from .check_conflicts import are_conflicts
 from .diagnose_infeasibility import diagnose_infeasibility
-from .validate_unassigned import check_solution
+from .validate_unassigned import check_solution, validate_unassigned_classes

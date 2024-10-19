@@ -5,12 +5,11 @@ from src.matching_algorithm import solve_timetable
 router = APIRouter()
 
 @router.post("/", summary="Assign teachers to classes",
-            # TODO: Add description and responses   
-            # description="Assign teachers to classes based on their available times and roles.",
+            description="Assign teachers to classes based on their available times and roles.",
             # responses={
-            #       200: {"description": "Successful assignment", "model": dict},
+            #       200: {"description": "Successful assignment"},
             #       400: {"description": "Bad Request"},
-            #   })
+            #   }
             )
 async def assign_teachers_to_classes(data: AssignmentRequestModel):
     data = data.dict()

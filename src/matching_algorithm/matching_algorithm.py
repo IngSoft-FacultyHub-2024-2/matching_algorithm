@@ -57,12 +57,7 @@ def solve_timetable(
         )
 
     # Constraints
-    conflicts = {
-        "teacher_without_any_classes": [],
-        "teacher_has_more_than_weekly_hours": [],
-        "classes_without_teachers": [],
-        "partially_unassigned": [],
-    }
+    conflicts = ConflictModel()
     seniority_preference = model.NewIntVar(0, 1000000, "seniority_preference")
     seniority_terms = []
 
@@ -155,13 +150,7 @@ def solve_timetable(
                         )
 
             if not assigned_teachers:
-                conflicts["classes_without_teachers"].append(
-                    {
-                        "class_name": class_name,
-                        "role": subclass.role,
-                        "subject": class_info.subject,
-                    }
-                )
+                conflicts.add_classes_without_teachers(class_name, subclass.role, class_info.subject)
 
     # Add the sum of all seniority terms
     if seniority_terms:
@@ -329,13 +318,11 @@ def solve_timetable(
                     len(assigned_teachers) < subclass.num_teachers
                     and len(assigned_teachers) > 0
                 ):
-                    conflicts["partially_unassigned"].append(
-                        {
-                            "class_name": class_name,
-                            "role": subclass.role,
-                            "assigned": len(assigned_teachers),
-                            "needed": subclass.num_teachers,
-                        }
+                    conflicts.add_partially_unassigned(
+                        class_name,
+                        subclass.role,
+                        len(assigned_teachers),
+                        subclass.num_teachers,
                     )
 
         # Check for unassigned subclasses
@@ -359,12 +346,10 @@ def solve_timetable(
                 if teacher_name in assigned_teachers
             )
             if teacher_hours > teacher_info.weekly_hours_max_work:
-                conflicts["teacher_has_more_than_weekly_hours"].append(
-                    {
-                        "teacher": teacher_name,
-                        "assigned_hours": teacher_hours,
-                        "weekly_hours_max_work": teacher_info.weekly_hours_max_work,
-                    }
+                conflicts.add_teacher_has_more_than_weekly_hours(
+                    teacher_name,
+                    teacher_hours,
+                    teacher_info.weekly_hours_max_work,
                 )
 
         # Add information about teachers without any classes
@@ -373,23 +358,18 @@ def solve_timetable(
             if not solver.Value(has_any_class[teacher_name])
         ]
         if teachers_without_classes:
-            conflicts["teacher_without_any_classes"] = teachers_without_classes
+            conflicts.add_teacher_without_any_classes(teachers_without_classes)
 
         return Assignments(
             matches=result,
             unassigned=unassigned,
-            conflicts=ConflictModel(
-                teacher_without_any_classes=conflicts["teacher_without_any_classes"],
-                teacher_has_more_than_weekly_hours=conflicts["teacher_has_more_than_weekly_hours"],
-                classes_without_teachers=conflicts["classes_without_teachers"],
-                partially_unassigned=conflicts["partially_unassigned"]
-            )
+            conflicts=conflicts
         )
     else:
         empty_conflicts = ConflictModel(
             teacher_without_any_classes=[],
             teacher_has_more_than_weekly_hours=[],
-            classes_without_teachers=conflicts["classes_without_teachers"],
+            classes_without_teachers=[],
             partially_unassigned=[]
         )
         return Assignments(

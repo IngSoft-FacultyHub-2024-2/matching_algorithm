@@ -11,7 +11,7 @@ from src.matching_algorithm.matching_algorithm import solve_timetable
 from src.matching_algorithm.quality_assurance import are_conflicts
 from src.matching_algorithm.quality_assurance import diagnose_infeasibility
 from src.matching_algorithm.quality_assurance import check_solution
-
+from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 subjects = [
     {"subject": "Arq1", "role": ["Theory", "Practice"]},
@@ -171,22 +171,23 @@ if __name__ == "__main__":
 
     # Now, let's solve the timetable
     start_time = time.time()
-    result, unassigned, conflicts = solve_timetable(teachers, classes)
+    teachers, classes = convert_teachers_and_classes_dict_to_model(teachers, classes)
+    assignments = solve_timetable(teachers, classes)
     algorithm_duration = time.time() - start_time
     print(f"Results:")
-    print(result)
+    print(assignments.matches)
     print(f"Conflicts:")
-    print(conflicts)
-    print("unassigned: ", unassigned)
+    print(assignments.conflicts)
+    print("unassigned: ", assignments.unassigned)
     print(f"Algorithm duration: {algorithm_duration} seconds")
-    assert not are_conflicts(result, teachers, classes), "Error, there are conflicts in the timetable"
+    assert not are_conflicts(assignments.matches, teachers, classes), "Error, there are conflicts in the timetable"
     issues = diagnose_infeasibility(teachers, classes)
     for issue in issues:
         print(f"- {issue}")
 
-    check_solution(teachers, classes, result, unassigned, partially_unassigned=conflicts["partially_unassigned"])   
+    check_solution(teachers, classes, assignments.matches, assignments.unassigned, partially_unassigned=assignments.conflicts.partially_unassigned)   
 
     results_path = root_folder / "json_input_tests"
     results_path.mkdir(exist_ok=True)
-    json.dump(teachers, open(results_path.joinpath("teachers.json"), "w"), indent=4)
-    json.dump(classes, open(results_path.joinpath("classes.json"), "w"), indent=4)
+    json.dump({name: teacher.dict() for name, teacher in teachers.items()}, open(results_path.joinpath("teachers.json"), "w"), indent=4)
+    json.dump({name: class_.dict() for name, class_ in classes.items()}, open(results_path.joinpath("classes.json"), "w"), indent=4)

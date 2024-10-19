@@ -7,6 +7,7 @@ sys.path.append(str(root_folder))
 
 from src.matching_algorithm.matching_algorithm import solve_timetable
 from src.matching_algorithm.quality_assurance import are_conflicts
+from .util import convert_teachers_and_classes_dict_to_model
 
 class TestSolveTimetable(unittest.TestCase):
     def test_no_teachers_no_classes(self):
@@ -41,11 +42,12 @@ class TestSolveTimetable(unittest.TestCase):
                 ]
             },
         }
-        result, unassigned, conflicts = solve_timetable(teachers, classes)
-        self.assertFalse(are_conflicts(result, teachers, classes))
-        self.assertEqual(result, {"class1": {'Theory': ['teacher1']}})
-        self.assertEqual(unassigned, [])
-        for k, v in conflicts.items():
+        teachers, classes = convert_teachers_and_classes_dict_to_model(teachers, classes)
+        assignments = solve_timetable(teachers, classes)
+        self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
+        self.assertEqual(assignments.matches, {"class1": {'Theory': ['teacher1']}})
+        self.assertEqual(assignments.unassigned, [])
+        for k, v in assignments.conflicts.dict().items():
             self.assertEqual(v, [])
     
     def test_one_teacher_one_class_match_only_one_role_of_two(self):
@@ -76,10 +78,11 @@ class TestSolveTimetable(unittest.TestCase):
                 ]
             },
         }
-        result, unassigned, conflicts = solve_timetable(teachers, classes)
-        self.assertFalse(are_conflicts(result, teachers, classes))
-        self.assertEqual(result, {'class1': {'Theory': ['teacher1'], 'Practice': []}})
-        self.assertEqual(unassigned, [('class1', 'Practice')])
+        teachers, classes = convert_teachers_and_classes_dict_to_model(teachers, classes)
+        assignments = solve_timetable(teachers, classes)
+        self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
+        self.assertEqual(assignments.matches, {'class1': {'Theory': ['teacher1'], 'Practice': []}})
+        self.assertEqual(assignments.unassigned, [('class1', 'Practice')])
 
     def test_one_teacher_one_class_match_only_one_role_of_two_need_2_teachers(self):
         teachers = {

@@ -1,13 +1,11 @@
 from typing import Any, Optional
 
-from ..models import TeacherModel, RoleModel, SubClassModel
+from ..models import TeacherModel, RoleModel, SubClassModel, Assignments
 
 def validate_unassigned_classes(
     teachers: dict[str, TeacherModel],
     classes: dict[str, RoleModel],
-    result: dict[str, dict[str, list[str]]],
-    unassigned: list[tuple[str, str]],
-    partially_unassigned: list[dict[str, Any]]
+    assignments: Assignments
 ) -> list[dict[str, Any]]:
     validation_issues = []
     
@@ -69,17 +67,17 @@ def validate_unassigned_classes(
         return True, None
 
     # Check completely unassigned classes
-    for class_name, role in unassigned:
+    for class_name, role in assignments.unassigned:
         class_info = classes[class_name]
         subclass = next(s for s in class_info.subClasses if s.role == role)
         
         potential_teachers = []
         for teacher, teacher_info in teachers.items():
-            can_teach, reason = can_teacher_take_class(teacher, teacher_info, class_info, subclass, result)
+            can_teach, reason = can_teacher_take_class(teacher, teacher_info, class_info, subclass, assignments.matches)
             if can_teach:
                 current_hours = sum(
                     len(sub.times.dict(exclude_none=True).get(day, []))
-                    for c_name, c_assignments in result.items()
+                    for c_name, c_assignments in assignments.matches.items()
                     for r, assigned_teachers in c_assignments.items()
                     for sub in classes[c_name].subClasses if sub.role == r
                     for day in sub.times.dict(exclude_none=True)
@@ -102,24 +100,22 @@ def validate_unassigned_classes(
             })
 
     # Check partially unassigned classes
-    for partial in partially_unassigned:
-        class_name = partial['class_name']
-        role = partial['role']
+    for partial in assignments.conflicts.partially_unassigned:
+        class_name = partial.class_name
+        role = partial.role
         class_info = classes[class_name]
         subclass = next(s for s in class_info.subClasses if s.role == role)
-        
-        additional_teachers_needed = partial['needed'] - partial['assigned']
         potential_teachers = []
         
         for teacher, teacher_info in teachers.items():
-            if teacher in result[class_name][role]:
+            if teacher in assignments.matches[class_name][role]:
                 continue  # Skip already assigned teachers
                 
-            can_teach, reason = can_teacher_take_class(teacher, teacher_info, class_info, subclass, result)
+            can_teach, reason = can_teacher_take_class(teacher, teacher_info, class_info, subclass, assignments.matches)
             if can_teach:
                 current_hours = sum(
                     len(sub.times.dict(exclude_none=True).get(day, []))
-                    for c_name, c_assignments in result.items()
+                    for c_name, c_assignments in assignments.matches.items()
                     for r, assigned_teachers in c_assignments.items()
                     for sub in classes[c_name].subClasses if sub.role == r
                     for day in sub.times.dict(exclude_none=True)
@@ -137,8 +133,8 @@ def validate_unassigned_classes(
                 'role': role,
                 'subject': class_info.subject,
                 'type': 'partially_unassigned',
-                'teachers_assigned': partial['assigned'],
-                'teachers_needed': partial['needed'],
+                'teachers_assigned': partial.assigned,
+                'teachers_needed': partial.needed,
                 'potential_teachers': potential_teachers
             })
 
@@ -147,11 +143,9 @@ def validate_unassigned_classes(
 def check_solution(
     teachers: dict[str, TeacherModel],
     classes: dict[str, RoleModel],
-    result: dict[str, dict[str, list[str]]],
-    unassigned: list[tuple[str, str]],
-    partially_unassigned: list[dict[str, Any]]
+    assignments: Assignments,
 ) -> None:
-    validation_issues = validate_unassigned_classes(teachers, classes, result, unassigned, partially_unassigned)
+    validation_issues = validate_unassigned_classes(teachers, classes, assignments)
     
     if validation_issues:
         print("\nPotential issues found:")
@@ -167,7 +161,7 @@ def check_solution(
                 print(f"    Current hours: {pt['current_hours']}")
                 print(f"    Available hours: {pt['available_hours']}")
     else:
-        if unassigned or partially_unassigned:
+        if assignments.unassigned or assignments.conflicts.partially_unassigned:
             print("No issues found. All unassigned or partially assigned classes appear to be correctly handled.")
         else:
             print("No issues found. All classes were fully assigned successfully.")

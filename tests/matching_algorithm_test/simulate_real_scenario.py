@@ -185,7 +185,7 @@ if __name__ == "__main__":
     for issue in issues:
         print(f"- {issue}")
 
-    check_solution(teachers, classes, assignments.matches, assignments.unassigned, partially_unassigned=assignments.conflicts.partially_unassigned)   
+    check_solution(teachers, classes, assignments)   
 
     results_path = root_folder / "json_input_tests"
     results_path.mkdir(exist_ok=True)

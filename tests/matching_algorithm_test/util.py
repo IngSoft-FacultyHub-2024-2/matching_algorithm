@@ -1,6 +1,6 @@
 from src.matching_algorithm import TeacherModel, ClassModel
 
-def convert_teachers_and_classes_dict_to_model(teachers: dict, classes: dict):
+def convert_teachers_and_classes_dict_to_model(teachers: dict, classes: dict) -> tuple[dict[str, TeacherModel], dict[str, ClassModel]]:
     teachers = convert_teachers_model_to_dict(teachers)
     classes = convert_classes_model_to_dict(classes)
     return teachers, classes

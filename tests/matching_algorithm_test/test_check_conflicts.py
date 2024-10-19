@@ -1,13 +1,15 @@
 import unittest
 
 from src.matching_algorithm.quality_assurance import are_conflicts
+from .util import convert_teachers_and_classes_dict_to_model
 
 class TestCheckConflicts(unittest.TestCase):
 
     def setUp(self):
         self.teachers = {
             "teacher1": {
-                "subject_he_know_how_to_teach": [{"subject": "Math", "role": "Theory"}],
+                "seniority": 2,
+                "subject_he_know_how_to_teach": [{"subject": "Math", "role": ["Theory"]}],
                 "available_times": {
                     "Monday": [9, 10],
                     "Tuesday": [9, 10]
@@ -19,13 +21,13 @@ class TestCheckConflicts(unittest.TestCase):
             "class1": {
                 "subject": "Math",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [9], "Tuesday": [9]}}
+                    {"role": "Theory", "times": {"Monday": [9], "Tuesday": [9]}, "num_teachers": 1}
                 ]
             },
             "class2": {
                 "subject": "Math",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [9]}}
+                    {"role": "Theory", "times": {"Monday": [9]}, "num_teachers": 1}
                 ]
             }
         }
@@ -36,23 +38,28 @@ class TestCheckConflicts(unittest.TestCase):
         }
 
     def test_no_conflicts(self):
-        self.assertFalse(are_conflicts(self.assignment, self.teachers, self.classes))
+        teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
+        self.assertFalse(are_conflicts(self.assignment, teachers, classes))
 
     def test_teacher_cannot_teach_class_because_of_knowledge(self):
         self.teachers["teacher1"]["subject_he_know_how_to_teach"] = []
-        self.assertTrue(are_conflicts(self.assignment, self.teachers, self.classes))
+        teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
+        self.assertTrue(are_conflicts(self.assignment, teachers, classes))
     
     def test_teacher_cannot_teach_class_because_of_role(self):
-        self.teachers["teacher1"]["subject_he_know_how_to_teach"][0]["role"] = "Practice"
-        self.assertTrue(are_conflicts(self.assignment, self.teachers, self.classes))
+        self.teachers["teacher1"]["subject_he_know_how_to_teach"][0]["role"] = ["Practice"]
+        teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
+        self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 
     def test_teacher_has_more_than_weekly_hours(self):
         self.teachers["teacher1"]["weekly_hours_max_work"] = 1
-        self.assertTrue(are_conflicts(self.assignment, self.teachers, self.classes))
+        teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
+        self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 
     def test_teacher_teach_more_than_one_class_at_same_time(self):
         self.assignment["class2"] = {"Theory": ["teacher1"]}
-        self.assertTrue(are_conflicts(self.assignment, self.teachers, self.classes))
+        teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
+        self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 
 if __name__ == '__main__':
     unittest.main()

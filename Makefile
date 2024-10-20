@@ -2,6 +2,15 @@
 
 .PHONY: build run test clean
 
+format:
+	black .
+
+isort:
+	isort .
+
+pylint:
+	pylint .
+
 test: 
 	python -m unittest discover -s tests
 

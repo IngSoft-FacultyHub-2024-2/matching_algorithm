@@ -1,7 +1,8 @@
-from pydantic import BaseModel
 from typing import Dict
 
-from ....matching_algorithm import TeacherModel, ClassModel
+from pydantic import BaseModel
+
+from ....matching_algorithm import ClassModel, TeacherModel
 
 
 class AssignmentRequestModel(BaseModel):

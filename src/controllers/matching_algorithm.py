@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
+from src.matching_algorithm import Assignments, solve_timetable
+
 from .DTO.in_models.assignment_request_model import AssignmentRequestModel
-from src.matching_algorithm import solve_timetable, Assignments
 
 router = APIRouter()
 

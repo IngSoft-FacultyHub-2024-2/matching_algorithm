@@ -1,5 +1,6 @@
 from ortools.sat.python import cp_model
-from .models import TeacherModel, ClassModel, Assignments, ConflictModel
+
+from .models import Assignments, ClassModel, ConflictModel, TeacherModel
 
 
 def solve_timetable(

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from .role_model import RoleType
 from .available_times_model import AvailableTimesModel
+from .role_model import RoleType
 
 
 class SubClassModel(BaseModel):

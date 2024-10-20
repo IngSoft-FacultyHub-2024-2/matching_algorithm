@@ -1,4 +1,4 @@
-from ..models import TeacherModel, ClassModel
+from ..models import ClassModel, TeacherModel
 
 
 def diagnose_infeasibility(

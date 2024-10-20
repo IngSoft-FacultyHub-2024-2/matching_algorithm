@@ -1,15 +1,16 @@
-import unittest
 import sys
+import unittest
 from pathlib import Path
 from typing import Optional
 
 root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
-from src.matching_algorithm import solve_timetable, ConflictModel
+from src.matching_algorithm import ConflictModel, solve_timetable
 from src.matching_algorithm.models import PartiallyUnassignedConflict
 from src.matching_algorithm.quality_assurance import are_conflicts
-from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
+from tests.matching_algorithm_test.util import \
+    convert_teachers_and_classes_dict_to_model
 
 
 class TestSolveTimetable(unittest.TestCase):

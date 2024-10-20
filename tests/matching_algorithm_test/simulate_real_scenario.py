@@ -1,17 +1,20 @@
-import random
-import time
-import sys
-from pathlib import Path
 import json
+import random
+import sys
+import time
+from pathlib import Path
 
 root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
-from src.matching_algorithm.matching_algorithm import solve_timetable, TeacherModel, ClassModel
-from src.matching_algorithm.quality_assurance import are_conflicts
-from src.matching_algorithm.quality_assurance import diagnose_infeasibility
-from src.matching_algorithm.quality_assurance import check_solution
-from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
+from src.matching_algorithm.matching_algorithm import (ClassModel,
+                                                       TeacherModel,
+                                                       solve_timetable)
+from src.matching_algorithm.quality_assurance import (are_conflicts,
+                                                      check_solution,
+                                                      diagnose_infeasibility)
+from tests.matching_algorithm_test.util import \
+    convert_teachers_and_classes_dict_to_model
 
 subjects = [
     {"subject": "Arq1", "role": ["Theory", "Practice"]},

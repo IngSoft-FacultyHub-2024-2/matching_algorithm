@@ -1,4 +1,4 @@
-from src.matching_algorithm import TeacherModel, ClassModel
+from src.matching_algorithm import ClassModel, TeacherModel
 
 
 def convert_teachers_and_classes_dict_to_model(

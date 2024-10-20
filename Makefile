@@ -2,6 +2,12 @@
 
 .PHONY: build run test clean
 
+install:
+	pip install -r requirements.txt
+
+build_docker:
+	docker compose up --build
+
 format:
 	black .
 

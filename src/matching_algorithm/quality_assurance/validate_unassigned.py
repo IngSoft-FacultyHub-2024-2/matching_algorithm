@@ -1,10 +1,10 @@
 from typing import Any, Optional
 
-from ..models import TeacherModel, RoleModel, SubClassModel, Assignments
+from ..models import TeacherModel, ClassModel, RoleModel, SubClassModel, Assignments, RoleType
 
 def validate_unassigned_classes(
     teachers: dict[str, TeacherModel],
-    classes: dict[str, RoleModel],
+    classes: dict[str, ClassModel],
     assignments: Assignments
 ) -> list[dict[str, Any]]:
     validation_issues = []
@@ -12,9 +12,9 @@ def validate_unassigned_classes(
     def can_teacher_take_class(
         teacher: str,
         teacher_info: TeacherModel,
-        class_info: RoleModel,
+        class_info: ClassModel,
         subclass: SubClassModel,
-        current_assignments: dict[str, dict[str, list[str]]]
+        current_assignments: dict[str, dict[RoleType, list[str]]]
     ) -> tuple[bool, Optional[str]]:
         # Check if teacher can teach this subject and role
         can_teach = any(
@@ -142,7 +142,7 @@ def validate_unassigned_classes(
 
 def check_solution(
     teachers: dict[str, TeacherModel],
-    classes: dict[str, RoleModel],
+    classes: dict[str, ClassModel],
     assignments: Assignments,
 ) -> None:
     validation_issues = validate_unassigned_classes(teachers, classes, assignments)

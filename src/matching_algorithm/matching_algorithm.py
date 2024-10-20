@@ -294,7 +294,7 @@ def solve_timetable(
     status = solver.Solve(model)
 
     # Prepare the output
-    result = {}
+    result: dict[str, dict] = {}
     if status == cp_model.INFEASIBLE:
         print("The problem is infeasible")
         print(solver.ResponseStats())

@@ -1,7 +1,7 @@
 import unittest
 
 from src.matching_algorithm.quality_assurance import are_conflicts
-from .util import convert_teachers_and_classes_dict_to_model
+from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 class TestCheckConflicts(unittest.TestCase):
 

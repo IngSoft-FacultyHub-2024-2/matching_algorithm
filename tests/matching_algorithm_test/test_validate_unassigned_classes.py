@@ -1,10 +1,10 @@
 import unittest
 import copy 
+import unittest
 
 from src.matching_algorithm.quality_assurance import validate_unassigned_classes
 from src.matching_algorithm import Assignments, ConflictModel
-from .util import convert_teachers_and_classes_dict_to_model
-import unittest
+from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 # Example data for tests
 teachers = { 

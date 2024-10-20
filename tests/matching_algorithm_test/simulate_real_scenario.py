@@ -28,7 +28,7 @@ subjects = [
 
 class TeachersGenerator():
     # Randomly select available times between 8-12 or 17-23 for each day
-    def generate_available_times(self):
+    def generate_available_times(self) -> dict:
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         hours = list(range(8, 12)) + list(range(17, 24))
         available_times = {}

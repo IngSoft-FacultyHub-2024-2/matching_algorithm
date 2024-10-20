@@ -1,7 +1,7 @@
-from ..models import TeacherModel, RoleModel, SubClassModel, RoleType
+from ..models import TeacherModel, ClassModel, RoleModel, SubClassModel, RoleType
 
-def are_conflicts(assignment: dict[str, dict[str, list[str]]], teachers: dict[str, TeacherModel], 
-                 classes: dict[str, RoleModel]) -> bool:
+def are_conflicts(assignment: dict[str, dict[RoleType, list[str]]], teachers: dict[str, TeacherModel], 
+                 classes: dict[str, ClassModel]) -> bool:
     for class_name, class_assigned_teachers in assignment.items():
         for selected_role, teachers_assigned in class_assigned_teachers.items():
             for teacher_name in teachers_assigned:
@@ -9,7 +9,7 @@ def are_conflicts(assignment: dict[str, dict[str, list[str]]], teachers: dict[st
                     print("teacher_cannot_teach_class")
                     return True
     # Check for weekly hours and time conflicts
-    teachers_classes: dict[str, list[tuple[RoleModel, RoleType]]] = {}
+    teachers_classes: dict[str, list[tuple[ClassModel, RoleType]]] = {}
     for class_name, class_assigned_teachers in assignment.items():
         for selected_role, teachers_assigned in class_assigned_teachers.items():
             for teacher_name in teachers_assigned:
@@ -27,7 +27,7 @@ def are_conflicts(assignment: dict[str, dict[str, list[str]]], teachers: dict[st
 
 
 def teacher_has_more_than_weekly_hours(teacher: TeacherModel, 
-        classes_that_he_teach: list[tuple[RoleModel, RoleType]]) -> bool:
+        classes_that_he_teach: list[tuple[ClassModel, RoleType]]) -> bool:
     weekly_hours = sum(
         sum(
             len(times) for times in get_subclass(class_, role).times.dict(exclude_none=True).values()
@@ -39,8 +39,8 @@ def teacher_has_more_than_weekly_hours(teacher: TeacherModel,
 
 
 def teacher_teach_more_than_one_class_at_same_time(teacher: TeacherModel, 
-        classes_that_he_teach: list[tuple[RoleModel, RoleType]]) -> bool:
-    booked_time = {
+        classes_that_he_teach: list[tuple[ClassModel, RoleType]]) -> bool:
+    booked_time: dict[str, dict] = {
         "Monday": {}, "Tuesday": {}, "Wednesday": {}, "Thursday": {}, "Friday": {}
     }
     
@@ -56,7 +56,7 @@ def teacher_teach_more_than_one_class_at_same_time(teacher: TeacherModel,
     return False
 
 
-def teacher_can_teach_class(teacher: TeacherModel, class_: RoleModel, selected_role: RoleType) -> bool:
+def teacher_can_teach_class(teacher: TeacherModel, class_: ClassModel, selected_role: RoleType) -> bool:
     if not teacher_know_subject(teacher, class_.subject, selected_role):
         return False
     
@@ -69,7 +69,7 @@ def teacher_can_teach_class(teacher: TeacherModel, class_: RoleModel, selected_r
     return True
 
 
-def get_subclass(class_: RoleModel, role: RoleType) -> SubClassModel:
+def get_subclass(class_: ClassModel, role: RoleType) -> SubClassModel:
     return next(subclass for subclass in class_.subClasses if subclass.role == role)
 
 

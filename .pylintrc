@@ -11,9 +11,10 @@ disable=C0114, # Missing module docstring (missing-module-docstring)
         R1714, # Consider merging these comparisons with "in" to 'x in y' (consider-using-in)
         W1309, # Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
         R0801, # Similar lines in 2 files (duplicate-code)
-        
+        C0413, # Import "from module import *" should not be used (wrong-import-position)
         W0612, # Unused variable (unused-variable)
-        
+        W1514, # Using open without explicitly specifying an encoding (consider-using-with)
+        W0621, # Redefining name from outer scope (redefined-outer-name)
         
 
 

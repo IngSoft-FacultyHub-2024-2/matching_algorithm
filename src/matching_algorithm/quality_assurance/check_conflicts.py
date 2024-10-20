@@ -1,5 +1,4 @@
-from ..models import (ClassModel, RoleType, SubClassModel,
-                      TeacherModel)
+from ..models import ClassModel, RoleType, SubClassModel, TeacherModel
 
 
 def are_conflicts(

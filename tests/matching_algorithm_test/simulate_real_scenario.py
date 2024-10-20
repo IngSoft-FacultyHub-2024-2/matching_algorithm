@@ -207,7 +207,7 @@ if __name__ == "__main__":
     teachers_dict = {name: teacher.dict() for name, teacher in teachers.items()}
     with open(results_path.joinpath("teachers.json"), "w") as f:
         json.dump(teachers_dict, f, indent=4)
-    
+
     classes_dict = {name: class_.dict() for name, class_ in classes.items()}
     with open(results_path.joinpath("classes.json"), "w") as f:
         json.dump(classes_dict, f, indent=4)

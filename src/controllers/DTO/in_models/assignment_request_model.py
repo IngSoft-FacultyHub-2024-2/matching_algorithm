@@ -2,7 +2,7 @@ from typing import Dict
 
 from pydantic import BaseModel
 
-from ....matching_algorithm import ClassModel, TeacherModel
+from src.matching_algorithm import ClassModel, TeacherModel
 
 
 class AssignmentRequestModel(BaseModel):

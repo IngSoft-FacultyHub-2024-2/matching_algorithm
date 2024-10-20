@@ -8,11 +8,12 @@ root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
 from src.matching_algorithm.matching_algorithm import solve_timetable
-from src.matching_algorithm.quality_assurance import (are_conflicts,
-                                                      check_solution,
-                                                      diagnose_infeasibility)
-from tests.matching_algorithm_test.util import \
-    convert_teachers_and_classes_dict_to_model
+from src.matching_algorithm.quality_assurance import (
+    are_conflicts,
+    check_solution,
+    diagnose_infeasibility,
+)
+from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 subjects = [
     {"subject": "Arq1", "role": ["Theory", "Practice"]},

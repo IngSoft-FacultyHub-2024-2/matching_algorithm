@@ -3,10 +3,8 @@ import unittest
 
 from src.matching_algorithm import Assignments, ConflictModel
 from src.matching_algorithm.models import RoleType
-from src.matching_algorithm.quality_assurance import \
-    validate_unassigned_classes
-from tests.matching_algorithm_test.util import \
-    convert_teachers_and_classes_dict_to_model
+from src.matching_algorithm.quality_assurance import validate_unassigned_classes
+from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 # Example data for tests
 teachers: dict = {
@@ -59,7 +57,6 @@ unassigned: list[tuple[str, RoleType]] = [("class2", "Theory")]
 
 
 class TestValidateUnassignedClasses(unittest.TestCase):
-
     def test_completely_unassigned_classes(self) -> None:
         assignments = Assignments(copy.deepcopy(result), copy.deepcopy(unassigned), ConflictModel())
         teachers_dict, classes_dict = convert_teachers_and_classes_dict_to_model(teachers, classes)

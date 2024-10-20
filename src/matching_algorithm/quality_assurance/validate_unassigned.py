@@ -1,7 +1,6 @@
 from typing import Any, Optional
 
-from ..models import (Assignments, ClassModel, RoleType, SubClassModel,
-                      TeacherModel)
+from ..models import Assignments, ClassModel, RoleType, SubClassModel, TeacherModel
 
 
 def validate_unassigned_classes(

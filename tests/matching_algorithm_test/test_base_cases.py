@@ -9,8 +9,7 @@ sys.path.append(str(root_folder))
 from src.matching_algorithm import ConflictModel, solve_timetable
 from src.matching_algorithm.models import PartiallyUnassignedConflict
 from src.matching_algorithm.quality_assurance import are_conflicts
-from tests.matching_algorithm_test.util import \
-    convert_teachers_and_classes_dict_to_model
+from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 
 class TestSolveTimetable(unittest.TestCase):

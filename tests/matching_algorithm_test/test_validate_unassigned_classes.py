@@ -4,10 +4,11 @@ import unittest
 
 from src.matching_algorithm.quality_assurance import validate_unassigned_classes
 from src.matching_algorithm import Assignments, ConflictModel
+from src.matching_algorithm.models import RoleType
 from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 # Example data for tests
-teachers = { 
+teachers: dict = { 
     'teacher1': {
         "seniority": 2,
         'subject_he_know_how_to_teach': [{'subject': 'Math', 'role': ['Theory']}],
@@ -28,7 +29,7 @@ teachers = {
     }
 }
 
-classes = { 
+classes: dict = { 
     'class1': {
         'subject': 'Math',
         'subClasses': [{'role': 'Theory', 'times': {'Monday': [9], 'Tuesday': [9]}, 'num_teachers': 1}]
@@ -43,17 +44,17 @@ classes = {
     }
 }
 
-result = { 
+result: dict[str, dict[RoleType, list[str]]] = { 
     'class1': {'Theory': ['teacher1']},
     'class2': {'Theory': []},
     'class3': {'Practice': ['teacher3']}
 }
 
-unassigned = [('class2', 'Theory')]
+unassigned: list[tuple[str, RoleType]] = [('class2', 'Theory')]
 
 class TestValidateUnassignedClasses(unittest.TestCase):
 
-    def test_completely_unassigned_classes(self):
+    def test_completely_unassigned_classes(self) -> None:
         assignments = Assignments(copy.deepcopy(result), copy.deepcopy(unassigned), ConflictModel()) 
         teachers_dict, classes_dict = convert_teachers_and_classes_dict_to_model(teachers, classes)
         validation_issues = validate_unassigned_classes(teachers_dict, classes_dict, assignments)
@@ -66,18 +67,18 @@ class TestValidateUnassignedClasses(unittest.TestCase):
         self.assertEqual(len(issue['potential_teachers']), 1)
         self.assertEqual(issue['potential_teachers'][0]["teacher"], 'teacher2')
 
-    def test_not_partially_unassigned_classes(self):
+    def test_not_partially_unassigned_classes(self) -> None:
         assignments = Assignments(copy.deepcopy(result), copy.deepcopy(unassigned), ConflictModel()) 
         assignments.matches['class2']['Theory'] = ['teacher2']
         teachers_dict, classes_dict = convert_teachers_and_classes_dict_to_model(teachers, classes)
         validation_issues = validate_unassigned_classes(teachers_dict, classes_dict, assignments)
         self.assertEqual(len(validation_issues), 0)
 
-    def test_partially_unassigned_classes(self):
+    def test_partially_unassigned_classes(self) -> None:
         result['class2']['Theory'] = ['teacher2']
         teachers['teacher4'] = teachers['teacher2'].copy()
         partially_unassigned = [{'class_name': 'class2', 'role': 'Theory', 'assigned': 1, 'needed': 2}]
-        assignments = Assignments(copy.deepcopy(result), [], ConflictModel(partially_unassigned=partially_unassigned)) 
+        assignments = Assignments(copy.deepcopy(result), [], ConflictModel(partially_unassigned=partially_unassigned))  # type: ignore 
         teachers_dict, classes_dict = convert_teachers_and_classes_dict_to_model(teachers, classes)
         validation_issues = validate_unassigned_classes(teachers_dict, classes_dict, assignments)
         self.assertEqual(len(validation_issues), 1)
@@ -90,7 +91,7 @@ class TestValidateUnassignedClasses(unittest.TestCase):
         self.assertEqual(len(issue['potential_teachers']), 1)
         self.assertEqual(issue['potential_teachers'][0]["teacher"], 'teacher4')
     
-    def test_no_issues_all_classes_assigned(self):
+    def test_no_issues_all_classes_assigned(self) -> None:
         classes['class2']['subClasses'][0]['num_teachers'] = 1
         result['class2']['Theory'] = ['teacher2']
         assignments = Assignments(copy.deepcopy(result), [], ConflictModel()) 
@@ -98,7 +99,7 @@ class TestValidateUnassignedClasses(unittest.TestCase):
         validation_issues = validate_unassigned_classes(teachers_dict, classes_dict, assignments)
         self.assertEqual(len(validation_issues), 0)
 
-    def test_no_issues_no_one_can_teach_because_subject_he_know(self):
+    def test_no_issues_no_one_can_teach_because_subject_he_know(self) -> None:
         teachers_without_teacher2 = copy.deepcopy(teachers)
         del teachers_without_teacher2['teacher2']
         assignments = Assignments(copy.deepcopy(result), [], ConflictModel()) 
@@ -106,7 +107,7 @@ class TestValidateUnassignedClasses(unittest.TestCase):
         validation_issues = validate_unassigned_classes(teachers_without_teacher2, classes_dict, assignments)       
         self.assertEqual(len(validation_issues), 0)
 
-    def test_no_issues_no_one_can_teach_because_amount_of_hours(self):
+    def test_no_issues_no_one_can_teach_because_amount_of_hours(self) -> None:  
         teachers_without_teacher2 = copy.deepcopy(teachers)
         del teachers_without_teacher2['teacher2']    
         teachers_without_teacher2['teacher3']['subject_he_know_how_to_teach'].append({'subject': 'Math', 'role': ['Theory']})

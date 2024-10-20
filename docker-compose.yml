@@ -1,0 +1,17 @@
+version: "3.11"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./
+          target: /app
+    #     - action: rebuild
+    #       path: ./requirements.txt
+    tty: true  # Allow the container to run interactively
+    # stdin_open: true  # Keep STDIN open for interactive mode (bash)
+    # entrypoint: /bin/bash  # Set entrypoint to bash for terminal access

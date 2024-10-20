@@ -1,9 +1,9 @@
 from ortools.sat.python import cp_model
 from .models import TeacherModel, ClassModel, Assignments, ConflictModel
 
+
 def solve_timetable(
-    teachers: dict[str, TeacherModel],
-    classes: dict[str, ClassModel]
+    teachers: dict[str, TeacherModel], classes: dict[str, ClassModel]
 ) -> Assignments:
     model = cp_model.CpModel()
 
@@ -14,10 +14,8 @@ def solve_timetable(
         for class_name, class_info in classes.items():
             for subclass in class_info.subClasses:
                 for i in range(subclass.num_teachers):
-                    assignments[(teacher_name, class_name, subclass.role, i)] = (
-                        model.NewBoolVar(
-                            f'{teacher_name}_{class_name}_{subclass.role}_{i}'
-                        )
+                    assignments[(teacher_name, class_name, subclass.role, i)] = model.NewBoolVar(
+                        f"{teacher_name}_{class_name}_{subclass.role}_{i}"
                     )
 
     # Create 'is_assigned' variables for each subclass
@@ -28,15 +26,13 @@ def solve_timetable(
             if subclass.num_teachers > 1:
                 # For multi-teacher classes, create variables for partial assignment
                 for i in range(1, subclass.num_teachers + 1):
-                    partially_assigned[(class_name, subclass.role, i)] = (
-                        model.NewBoolVar(
-                            f'partially_assigned_{class_name}_{subclass.role}_{i}'
-                        )
+                    partially_assigned[(class_name, subclass.role, i)] = model.NewBoolVar(
+                        f"partially_assigned_{class_name}_{subclass.role}_{i}"
                     )
 
             # Keep the original is_assigned variable for fully assigned classes
             is_assigned[(class_name, subclass.role)] = model.NewBoolVar(
-                f'is_assigned_{class_name}_{subclass.role}'
+                f"is_assigned_{class_name}_{subclass.role}"
             )
 
     # Create 'has_any_class' variables for each teacher
@@ -52,9 +48,7 @@ def solve_timetable(
                         assignments[(teacher_name, class_name, subclass.role, i)]
                     )
         model.Add(sum(teacher_assignments) >= 1).OnlyEnforceIf(has_any_class[teacher_name])
-        model.Add(sum(teacher_assignments) == 0).OnlyEnforceIf(
-            has_any_class[teacher_name].Not()
-        )
+        model.Add(sum(teacher_assignments) == 0).OnlyEnforceIf(has_any_class[teacher_name].Not())
 
     # Constraints
     conflicts = ConflictModel()
@@ -105,17 +99,14 @@ def solve_timetable(
                     (
                         subject
                         for subject in teacher_info.subject_he_know_how_to_teach
-                        if subject.subject == class_info.subject
-                        and subclass.role in subject.role
+                        if subject.subject == class_info.subject and subclass.role in subject.role
                     ),
                     None,
                 )
 
                 if not can_teach_info:
                     for i in range(subclass.num_teachers):
-                        model.Add(
-                            assignments[(teacher_name, class_name, subclass.role, i)] == 0
-                        )
+                        model.Add(assignments[(teacher_name, class_name, subclass.role, i)] == 0)
                     continue
 
                 # Teacher must be available at the class times
@@ -130,10 +121,7 @@ def solve_timetable(
                         if time not in teacher_available_times:
                             for i in range(subclass.num_teachers):
                                 model.Add(
-                                    assignments[
-                                        (teacher_name, class_name, subclass.role, i)
-                                    ]
-                                    == 0
+                                    assignments[(teacher_name, class_name, subclass.role, i)] == 0
                                 )
                             is_available = False
                             break
@@ -150,7 +138,9 @@ def solve_timetable(
                         )
 
             if not assigned_teachers:
-                conflicts.add_classes_without_teachers(class_name, subclass.role, class_info.subject)
+                conflicts.add_classes_without_teachers(
+                    class_name, subclass.role, class_info.subject
+                )
 
     # Add the sum of all seniority terms
     if seniority_terms:
@@ -164,7 +154,7 @@ def solve_timetable(
                     (class_name, subclass.role, subclass.num_teachers)
                     for class_name, class_info in classes.items()
                     for subclass in class_info.subClasses
-                    if getattr(subclass.times, day) is not None 
+                    if getattr(subclass.times, day) is not None
                     and time in getattr(subclass.times, day)
                 ]
                 if conflicting_subclasses:
@@ -193,9 +183,7 @@ def solve_timetable(
         model.Add(weekly_hours <= teacher_info.weekly_hours_max_work)
 
     # Group preference
-    group_preference = model.NewIntVar(
-        0, len(teachers) * len(classes) * 2, "group_preference"
-    )
+    group_preference = model.NewIntVar(0, len(teachers) * len(classes) * 2, "group_preference")
     group_matches = []
 
     for teacher_name, teacher_info in teachers.items():
@@ -204,9 +192,7 @@ def solve_timetable(
         for group in teacher_info.groups:
             for class_name, class_info in classes.items():
                 if class_info.subject == group.subject:
-                    group_match = model.NewBoolVar(
-                        f"group_match_{teacher_name}_{class_name}"
-                    )
+                    group_match = model.NewBoolVar(f"group_match_{teacher_name}_{class_name}")
 
                     teacher_role_assignments = []
                     other_teacher_role_assignments = []
@@ -216,9 +202,7 @@ def solve_timetable(
                         if subclass.role in group.my_role:
                             for i in range(subclass.num_teachers):
                                 teacher_role_assignments.append(
-                                    assignments[
-                                        (teacher_name, class_name, subclass.role, i)
-                                    ]
+                                    assignments[(teacher_name, class_name, subclass.role, i)]
                                 )
 
                     # Check other teachers' assignments
@@ -229,20 +213,18 @@ def solve_timetable(
                             if subclass.role in other_teacher_info.role:
                                 for i in range(subclass.num_teachers):
                                     other_teacher_assignments.append(
-                                        assignments[
-                                            (other_teacher, class_name, subclass.role, i)
-                                        ]
+                                        assignments[(other_teacher, class_name, subclass.role, i)]
                                     )
                         if other_teacher_assignments:
                             other_teacher_role_assignments.append(
                                 model.NewBoolVar(f"other_{other_teacher}_{class_name}")
                             )
-                            model.Add(
-                                sum(other_teacher_assignments) >= 1
-                            ).OnlyEnforceIf(other_teacher_role_assignments[-1])
-                            model.Add(
-                                sum(other_teacher_assignments) == 0
-                            ).OnlyEnforceIf(other_teacher_role_assignments[-1].Not())
+                            model.Add(sum(other_teacher_assignments) >= 1).OnlyEnforceIf(
+                                other_teacher_role_assignments[-1]
+                            )
+                            model.Add(sum(other_teacher_assignments) == 0).OnlyEnforceIf(
+                                other_teacher_role_assignments[-1].Not()
+                            )
 
                     if teacher_role_assignments and other_teacher_role_assignments:
                         teacher_assigned = model.NewBoolVar(
@@ -307,17 +289,12 @@ def solve_timetable(
                 assigned_teachers = []
                 for teacher_name in teachers:
                     for i in range(subclass.num_teachers):
-                        if solver.Value(
-                            assignments[(teacher_name, class_name, subclass.role, i)]
-                        ):
+                        if solver.Value(assignments[(teacher_name, class_name, subclass.role, i)]):
                             assigned_teachers.append(teacher_name)
 
                 result[class_name][subclass.role] = assigned_teachers
 
-                if (
-                    len(assigned_teachers) < subclass.num_teachers
-                    and len(assigned_teachers) > 0
-                ):
+                if len(assigned_teachers) < subclass.num_teachers and len(assigned_teachers) > 0:
                     conflicts.add_partially_unassigned(
                         class_name,
                         subclass.role,
@@ -336,8 +313,11 @@ def solve_timetable(
         # Check for weekly hours conflicts
         for teacher_name, teacher_info in teachers.items():
             teacher_hours = sum(
-                len(getattr(subclass.times, day, []))
-                if getattr(subclass.times, day) is not None else 0
+                (
+                    len(getattr(subclass.times, day, []))
+                    if getattr(subclass.times, day) is not None
+                    else 0
+                )
                 for class_name, class_assignments in result.items()
                 for role, assigned_teachers in class_assignments.items()
                 for subclass in classes[class_name].subClasses
@@ -354,23 +334,20 @@ def solve_timetable(
 
         # Add information about teachers without any classes
         teachers_without_classes = [
-            teacher_name for teacher_name in teachers 
+            teacher_name
+            for teacher_name in teachers
             if not solver.Value(has_any_class[teacher_name])
         ]
         if teachers_without_classes:
             conflicts.add_teacher_without_any_classes(teachers_without_classes)
 
-        return Assignments(
-            matches=result,
-            unassigned=unassigned,
-            conflicts=conflicts
-        )
+        return Assignments(matches=result, unassigned=unassigned, conflicts=conflicts)
     else:
         empty_conflicts = ConflictModel(
             teacher_without_any_classes=[],
             teacher_has_more_than_weekly_hours=[],
             classes_without_teachers=[],
-            partially_unassigned=[]
+            partially_unassigned=[],
         )
         return Assignments(
             matches={},
@@ -379,5 +356,5 @@ def solve_timetable(
                 for class_name, class_info in classes.items()
                 for subclass in class_info.subClasses
             ],
-            conflicts=empty_conflicts
+            conflicts=empty_conflicts,
         )

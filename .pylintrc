@@ -1,0 +1,21 @@
+[MESSAGES CONTROL]
+disable=C0114, # Missing module docstring (missing-module-docstring)
+        C0115, # Missing class docstring (missing-class-docstring)
+        C0116, # Missing function or method docstring (missing-function-docstring)
+        C0301, # Line too long (X/X) (line-too-long)
+        R1702, # Too many nested blocks (too-many-nested-blocks)
+        R0914, # Too many local variables (X/15) (too-many-locals)
+        R0912, # Too many branches (X/12) (too-many-branches)
+        R0915, # Too many statements (X/50) (too-many-statements)
+        R1705, # Unnecessary "else" after "return" (no-else-return)
+        R1714, # Consider merging these comparisons with "in" to 'x in y' (consider-using-in)
+        W1309, # Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+        R0801, # Similar lines in 2 files (duplicate-code)
+        
+
+        
+
+
+[FORMAT]
+# Maximum number of characters on a single line.
+max-line-length=88

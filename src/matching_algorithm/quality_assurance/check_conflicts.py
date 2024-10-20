@@ -1,4 +1,4 @@
-from ..models import (ClassModel, RoleModel, RoleType, SubClassModel,
+from ..models import (ClassModel, RoleType, SubClassModel,
                       TeacherModel)
 
 
@@ -27,9 +27,7 @@ def are_conflicts(
         if teacher_has_more_than_weekly_hours(teachers[teacher_name], classes_that_he_teach):
             print("teacher_has_more_than_weekly_hours")
             return True
-        if teacher_teach_more_than_one_class_at_same_time(
-            teachers[teacher_name], classes_that_he_teach
-        ):
+        if teacher_teach_more_than_one_class_at_same_time(classes_that_he_teach):
             print("teacher_teach_more_than_one_class_at_same_time")
             return True
     return False
@@ -50,7 +48,7 @@ def teacher_has_more_than_weekly_hours(
 
 
 def teacher_teach_more_than_one_class_at_same_time(
-    teacher: TeacherModel, classes_that_he_teach: list[tuple[ClassModel, RoleType]]
+    classes_that_he_teach: list[tuple[ClassModel, RoleType]]
 ) -> bool:
     booked_time: dict[str, dict] = {
         "Monday": {},

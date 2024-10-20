@@ -7,9 +7,7 @@ from pathlib import Path
 root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
-from src.matching_algorithm.matching_algorithm import (ClassModel,
-                                                       TeacherModel,
-                                                       solve_timetable)
+from src.matching_algorithm.matching_algorithm import solve_timetable
 from src.matching_algorithm.quality_assurance import (are_conflicts,
                                                       check_solution,
                                                       diagnose_infeasibility)
@@ -206,13 +204,10 @@ if __name__ == "__main__":
 
     results_path = root_folder / "json_input_tests"
     results_path.mkdir(exist_ok=True)
-    json.dump(
-        {name: teacher.dict() for name, teacher in teachers.items()},
-        open(results_path.joinpath("teachers.json"), "w"),
-        indent=4,
-    )
-    json.dump(
-        {name: class_.dict() for name, class_ in classes.items()},
-        open(results_path.joinpath("classes.json"), "w"),
-        indent=4,
-    )
+    teachers_dict = {name: teacher.dict() for name, teacher in teachers.items()}
+    with open(results_path.joinpath("teachers.json"), "w") as f:
+        json.dump(teachers_dict, f, indent=4)
+    
+    classes_dict = {name: class_.dict() for name, class_ in classes.items()}
+    with open(results_path.joinpath("classes.json"), "w") as f:
+        json.dump(classes_dict, f, indent=4)

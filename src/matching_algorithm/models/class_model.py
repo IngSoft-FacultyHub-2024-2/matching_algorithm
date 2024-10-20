@@ -1,4 +1,4 @@
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 
 from .sub_class_model import SubClassModel
 

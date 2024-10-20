@@ -1,10 +1,9 @@
 from typing import Optional
 
-from pydantic import BaseModel, conint, constr
+from pydantic import BaseModel
 
 from .available_times_model import AvailableTimesModel
 from .group_model import GroupModel
-from .role_model import RoleType
 from .subject_model import SubjectModel
 
 

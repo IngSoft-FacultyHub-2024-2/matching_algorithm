@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from ..models import (Assignments, ClassModel, RoleModel, RoleType,
+from ..models import (Assignments, ClassModel, RoleType,
                       SubClassModel, TeacherModel)
 
 

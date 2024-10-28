@@ -20,4 +20,5 @@ router = APIRouter()
 async def assign_teachers_to_classes(data: AssignmentRequestModel) -> Assignments:
     teachers = data.teachers
     classes = data.classes
-    return solve_timetable(teachers, classes)
+    teacher_names_with_classes = data.teacher_names_with_classes
+    return solve_timetable(teachers, classes, teacher_names_with_classes)

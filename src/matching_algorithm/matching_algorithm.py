@@ -4,8 +4,13 @@ from .models import Assignments, ClassModel, ConflictModel, TeacherModel
 
 
 def solve_timetable(
-    teachers: dict[str, TeacherModel], classes: dict[str, ClassModel]
+    teachers: dict[str, TeacherModel],
+    classes: dict[str, ClassModel],
+    teacher_names_with_classes: list[str] | None = None,
 ) -> Assignments:
+    if teacher_names_with_classes is None:
+        teacher_names_with_classes = []
+
     model = cp_model.CpModel()
 
     weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
@@ -39,17 +44,20 @@ def solve_timetable(
     # Create 'has_any_class' variables for each teacher
     has_any_class = {}
     for teacher_name in teachers:
-        has_any_class[teacher_name] = model.NewBoolVar(f"has_any_class_{teacher_name}")
-        # A teacher has a class if they're assigned to any subclass
-        teacher_assignments = []
-        for class_name, class_info in classes.items():
-            for subclass in class_info.subClasses:
-                for i in range(subclass.num_teachers):
-                    teacher_assignments.append(
-                        assignments[(teacher_name, class_name, subclass.role, i)]
-                    )
-        model.Add(sum(teacher_assignments) >= 1).OnlyEnforceIf(has_any_class[teacher_name])
-        model.Add(sum(teacher_assignments) == 0).OnlyEnforceIf(has_any_class[teacher_name].Not())
+        if teacher_name not in teacher_names_with_classes:
+            has_any_class[teacher_name] = model.NewBoolVar(f"has_any_class_{teacher_name}")
+            # A teacher has a class if they're assigned to any subclass
+            teacher_assignments = []
+            for class_name, class_info in classes.items():
+                for subclass in class_info.subClasses:
+                    for i in range(subclass.num_teachers):
+                        teacher_assignments.append(
+                            assignments[(teacher_name, class_name, subclass.role, i)]
+                        )
+            model.Add(sum(teacher_assignments) >= 1).OnlyEnforceIf(has_any_class[teacher_name])
+            model.Add(sum(teacher_assignments) == 0).OnlyEnforceIf(
+                has_any_class[teacher_name].Not()
+            )
 
     # Constraints
     conflicts = ConflictModel()
@@ -337,7 +345,8 @@ def solve_timetable(
         teachers_without_classes = [
             teacher_name
             for teacher_name in teachers
-            if not solver.Value(has_any_class[teacher_name])
+            if teacher_name not in teacher_names_with_classes
+            and not solver.Value(has_any_class[teacher_name])
         ]
         if teachers_without_classes:
             conflicts.add_teacher_without_any_classes(teachers_without_classes)

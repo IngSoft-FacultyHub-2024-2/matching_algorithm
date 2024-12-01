@@ -41,7 +41,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 2,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Math", "role": ["Theory", "Technology"]},
+                    {"subject": "Math", "role": ["Teórico", "Tecnología"]},
                 ],
                 "available_times": {"Monday": [9, 10]},
                 "weekly_hours_max_work": 10,
@@ -50,13 +50,15 @@ class TestSolveTimetable(unittest.TestCase):
         classes_dict = {
             "class1": {
                 "subject": "Math",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [9, 10]}, "num_teachers": 1}],
+                "subClasses": [
+                    {"role": "Teórico", "times": {"Monday": [9, 10]}, "num_teachers": 1}
+                ],
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
-        self.assertEqual(assignments.matches, {"class1": {"Theory": ["teacher1"]}})
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1"]}})
         self.assertEqual(assignments.unassigned, [])
         self.check_no_conflicts(assignments.conflicts)
 
@@ -65,7 +67,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 2,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory", "Technology"]},
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
                 ],
                 "available_times": {"Monday": [9, 10]},
                 "weekly_hours_max_work": 10,
@@ -75,8 +77,8 @@ class TestSolveTimetable(unittest.TestCase):
             "class1": {
                 "subject": "Arq1",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [9, 10]}, "num_teachers": 1},
-                    {"role": "Technology", "times": {"Friday": [9, 10]}, "num_teachers": 1},
+                    {"role": "Teórico", "times": {"Monday": [9, 10]}, "num_teachers": 1},
+                    {"role": "Tecnología", "times": {"Friday": [9, 10]}, "num_teachers": 1},
                 ],
             },
         }
@@ -84,16 +86,16 @@ class TestSolveTimetable(unittest.TestCase):
         assignments = solve_timetable(teachers, classes)
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(
-            assignments.matches, {"class1": {"Theory": ["teacher1"], "Technology": []}}
+            assignments.matches, {"class1": {"Teórico": ["teacher1"], "Tecnología": []}}
         )
-        self.assertEqual(assignments.unassigned, [("class1", "Technology")])
+        self.assertEqual(assignments.unassigned, [("class1", "Tecnología")])
 
     def test_one_teacher_one_class_match_only_one_role_of_two_need_2_teachers(self) -> None:
         teachers_dict = {
             "teacher1": {
                 "seniority": 2,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory", "Technology"]},
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
                 ],
                 "available_times": {"Monday": [9, 10]},
                 "weekly_hours_max_work": 10,
@@ -103,8 +105,8 @@ class TestSolveTimetable(unittest.TestCase):
             "class1": {
                 "subject": "Arq1",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [9, 10]}, "num_teachers": 1},
-                    {"role": "Technology", "times": {"Friday": [9, 10]}, "num_teachers": 1},
+                    {"role": "Teórico", "times": {"Monday": [9, 10]}, "num_teachers": 1},
+                    {"role": "Tecnología", "times": {"Friday": [9, 10]}, "num_teachers": 1},
                 ],
             },
         }
@@ -112,16 +114,16 @@ class TestSolveTimetable(unittest.TestCase):
         assignments = solve_timetable(teachers, classes)
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(
-            assignments.matches, {"class1": {"Theory": ["teacher1"], "Technology": []}}
+            assignments.matches, {"class1": {"Teórico": ["teacher1"], "Tecnología": []}}
         )
-        self.assertEqual(assignments.unassigned, [("class1", "Technology")])
+        self.assertEqual(assignments.unassigned, [("class1", "Tecnología")])
 
     def test_one_teacher_one_class_two_days_match(self) -> None:
         teachers_dict = {
             "teacher1": {
                 "seniority": 2,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {"Monday": [9, 10, 11], "Friday": [9, 10, 11]},
                 "weekly_hours_max_work": 10,
@@ -132,7 +134,7 @@ class TestSolveTimetable(unittest.TestCase):
                 "subject": "Arq1",
                 "subClasses": [
                     {
-                        "role": "Theory",
+                        "role": "Teórico",
                         "times": {"Monday": [9, 10], "Friday": [9, 10]},
                         "num_teachers": 1,
                     }
@@ -141,7 +143,7 @@ class TestSolveTimetable(unittest.TestCase):
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
-        self.assertEqual(assignments.matches, {"class1": {"Theory": ["teacher1"]}})
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1"]}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
         self.check_no_conflicts(assignments.conflicts)
@@ -151,7 +153,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 2,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -166,7 +168,7 @@ class TestSolveTimetable(unittest.TestCase):
                 "subject": "Arq1",
                 "subClasses": [
                     {
-                        "role": "Theory",
+                        "role": "Teórico",
                         "times": {"Monday": [9, 10], "Friday": [9, 10]},
                         "num_teachers": 1,
                     }
@@ -176,7 +178,7 @@ class TestSolveTimetable(unittest.TestCase):
                 "subject": "Arq1",
                 "subClasses": [
                     {
-                        "role": "Theory",
+                        "role": "Teórico",
                         "times": {"Tuesday": [9, 10], "Friday": [11, 12]},
                         "num_teachers": 1,
                     }
@@ -187,7 +189,7 @@ class TestSolveTimetable(unittest.TestCase):
         assignments = solve_timetable(teachers, classes)
         self.assertEqual(
             assignments.matches,
-            {"class1": {"Theory": ["teacher1"]}, "class2": {"Theory": ["teacher1"]}},
+            {"class1": {"Teórico": ["teacher1"]}, "class2": {"Teórico": ["teacher1"]}},
         )
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
@@ -200,7 +202,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -212,7 +214,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher2": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -224,7 +226,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher3": {
                 "seniority": 2,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -239,7 +241,7 @@ class TestSolveTimetable(unittest.TestCase):
                 "subject": "Arq1",
                 "subClasses": [
                     {
-                        "role": "Theory",
+                        "role": "Teórico",
                         "times": {"Monday": [9, 10], "Friday": [9, 10]},
                         "num_teachers": 2,
                     }
@@ -248,7 +250,7 @@ class TestSolveTimetable(unittest.TestCase):
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
-        self.assertEqual(assignments.matches, {"class1": {"Theory": ["teacher1", "teacher2"]}})
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1", "teacher2"]}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
         self.assertEqual(assignments.conflicts.teacher_without_any_classes, ["teacher3"])
@@ -261,7 +263,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -273,7 +275,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher2": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -285,7 +287,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher3": {
                 "seniority": 2,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -300,7 +302,7 @@ class TestSolveTimetable(unittest.TestCase):
                 "subject": "Arq1",
                 "subClasses": [
                     {
-                        "role": "Theory",
+                        "role": "Teórico",
                         "times": {"Monday": [9, 10], "Friday": [9, 10]},
                         "num_teachers": 2,
                     }
@@ -309,7 +311,7 @@ class TestSolveTimetable(unittest.TestCase):
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
-        self.assertEqual(assignments.matches, {"class1": {"Theory": ["teacher2", "teacher3"]}})
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher2", "teacher3"]}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
         self.assertEqual(assignments.conflicts.teacher_without_any_classes, ["teacher1"])
@@ -320,7 +322,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -328,16 +330,16 @@ class TestSolveTimetable(unittest.TestCase):
                 "weekly_hours_max_work": 10,
                 "groups": [
                     {
-                        "my_role": ["Theory"],
+                        "my_role": ["Teórico"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher2", "role": ["Theory"]}],
+                        "other_teacher": [{"teacher": "teacher2", "role": ["Teórico"]}],
                     }
                 ],
             },
             "teacher2": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -345,16 +347,16 @@ class TestSolveTimetable(unittest.TestCase):
                 "weekly_hours_max_work": 10,
                 "groups": [
                     {
-                        "my_role": ["Theory"],
+                        "my_role": ["Teórico"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher1", "role": ["Theory"]}],
+                        "other_teacher": [{"teacher": "teacher1", "role": ["Teórico"]}],
                     }
                 ],
             },
             "teacher3": {
                 "seniority": 8,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -366,14 +368,14 @@ class TestSolveTimetable(unittest.TestCase):
             "class1": {
                 "subject": "Arq1",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [9, 10]}, "num_teachers": 2},
+                    {"role": "Teórico", "times": {"Monday": [9, 10]}, "num_teachers": 2},
                 ],
             },
         }
 
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
-        self.assertEqual(assignments.matches, {"class1": {"Theory": ["teacher1", "teacher2"]}})
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1", "teacher2"]}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
         self.assertEqual(assignments.conflicts.teacher_without_any_classes, ["teacher3"])
@@ -384,7 +386,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Technology"]},
+                    {"subject": "Arq1", "role": ["Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -394,16 +396,16 @@ class TestSolveTimetable(unittest.TestCase):
                 "weekly_hours_max_work": 10,
                 "groups": [
                     {
-                        "my_role": ["Technology"],
+                        "my_role": ["Tecnología"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher2", "role": ["Theory"]}],
+                        "other_teacher": [{"teacher": "teacher2", "role": ["Teórico"]}],
                     }
                 ],
             },
             "teacher2": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -413,16 +415,16 @@ class TestSolveTimetable(unittest.TestCase):
                 "weekly_hours_max_work": 10,
                 "groups": [
                     {
-                        "my_role": ["Theory"],
+                        "my_role": ["Teórico"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher1", "role": ["Technology"]}],
+                        "other_teacher": [{"teacher": "teacher1", "role": ["Tecnología"]}],
                     }
                 ],
             },
             "teacher3": {
                 "seniority": 8,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory", "Technology"]},
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -436,15 +438,15 @@ class TestSolveTimetable(unittest.TestCase):
             "class1": {
                 "subject": "Arq1",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [9, 10]}, "num_teachers": 1},
-                    {"role": "Technology", "times": {"Friday": [9, 10]}, "num_teachers": 1},
+                    {"role": "Teórico", "times": {"Monday": [9, 10]}, "num_teachers": 1},
+                    {"role": "Tecnología", "times": {"Friday": [9, 10]}, "num_teachers": 1},
                 ],
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
         self.assertEqual(
-            assignments.matches, {"class1": {"Theory": ["teacher2"], "Technology": ["teacher1"]}}
+            assignments.matches, {"class1": {"Teórico": ["teacher2"], "Tecnología": ["teacher1"]}}
         )
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
@@ -456,7 +458,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Technology"]},
+                    {"subject": "Arq1", "role": ["Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -464,16 +466,16 @@ class TestSolveTimetable(unittest.TestCase):
                 "weekly_hours_max_work": 10,
                 "groups": [
                     {
-                        "my_role": ["Technology"],
+                        "my_role": ["Tecnología"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher2", "role": ["Theory"]}],
+                        "other_teacher": [{"teacher": "teacher2", "role": ["Teórico"]}],
                     }
                 ],
             },
             "teacher2": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -483,16 +485,16 @@ class TestSolveTimetable(unittest.TestCase):
                 "weekly_hours_max_work": 10,
                 "groups": [
                     {
-                        "my_role": ["Theory"],
+                        "my_role": ["Teórico"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher1", "role": ["Technology"]}],
+                        "other_teacher": [{"teacher": "teacher1", "role": ["Tecnología"]}],
                     }
                 ],
             },
             "teacher3": {
                 "seniority": 8,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory", "Technology"]},
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -506,15 +508,15 @@ class TestSolveTimetable(unittest.TestCase):
             "class1": {
                 "subject": "Arq1",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [9, 10]}, "num_teachers": 1},
-                    {"role": "Technology", "times": {"Friday": [9, 10]}, "num_teachers": 1},
+                    {"role": "Teórico", "times": {"Monday": [9, 10]}, "num_teachers": 1},
+                    {"role": "Tecnología", "times": {"Friday": [9, 10]}, "num_teachers": 1},
                 ],
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
         self.assertEqual(
-            assignments.matches, {"class1": {"Theory": ["teacher2"], "Technology": ["teacher3"]}}
+            assignments.matches, {"class1": {"Teórico": ["teacher2"], "Tecnología": ["teacher3"]}}
         )
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
@@ -526,7 +528,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -541,7 +543,7 @@ class TestSolveTimetable(unittest.TestCase):
                 "subject": "Arq1",
                 "subClasses": [
                     {
-                        "role": "Theory",
+                        "role": "Teórico",
                         "times": {"Monday": [9, 10], "Friday": [9, 10]},
                         "num_teachers": 2,
                     }
@@ -550,11 +552,11 @@ class TestSolveTimetable(unittest.TestCase):
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
-        self.assertEqual(assignments.matches, {"class1": {"Theory": ["teacher1"]}})
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1"]}})
         self.assertEqual(assignments.unassigned, [])
         self.assertEqual(
             assignments.conflicts.partially_unassigned,
-            [PartiallyUnassignedConflict("class1", "Theory", 1, 2)],
+            [PartiallyUnassignedConflict("class1", "Teórico", 1, 2)],
         )
         self.check_no_conflicts(assignments.conflicts, ["partially_unassigned"])
 
@@ -562,13 +564,13 @@ class TestSolveTimetable(unittest.TestCase):
         teachers_dict = {
             "teacher1": {
                 "seniority": 3,
-                "subject_he_know_how_to_teach": [{"subject": "Arq1", "role": ["Theory"]}],
+                "subject_he_know_how_to_teach": [{"subject": "Arq1", "role": ["Teórico"]}],
                 "available_times": {"Monday": [9, 10], "Tuesday": [9, 11], "Friday": [9, 10, 12]},
                 "weekly_hours_max_work": 10,
             },
             "teacher2": {
                 "seniority": 2,
-                "subject_he_know_how_to_teach": [{"subject": "Agil1", "role": ["Theory"]}],
+                "subject_he_know_how_to_teach": [{"subject": "Agil1", "role": ["Teórico"]}],
                 "available_times": {
                     "Monday": [9, 10],
                     "Tuesday": [9, 10, 11],
@@ -582,7 +584,7 @@ class TestSolveTimetable(unittest.TestCase):
                 "subject": "Arq1",
                 "subClasses": [
                     {
-                        "role": "Theory",
+                        "role": "Teórico",
                         "times": {"Monday": [9, 10], "Friday": [9]},
                         "num_teachers": 1,
                     }
@@ -592,7 +594,7 @@ class TestSolveTimetable(unittest.TestCase):
                 "subject": "Arq1",
                 "subClasses": [
                     {
-                        "role": "Theory",
+                        "role": "Teórico",
                         "times": {"Monday": [9, 10], "Friday": [9]},
                         "num_teachers": 1,
                     }
@@ -602,17 +604,17 @@ class TestSolveTimetable(unittest.TestCase):
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
         self.assertEqual(
-            assignments.matches, {"class1": {"Theory": []}, "class2": {"Theory": ["teacher1"]}}
+            assignments.matches, {"class1": {"Teórico": []}, "class2": {"Teórico": ["teacher1"]}}
         )
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
-        self.assertEqual(assignments.unassigned, [("class1", "Theory")])
+        self.assertEqual(assignments.unassigned, [("class1", "Teórico")])
         self.assertEqual(assignments.conflicts.teacher_without_any_classes, ["teacher2"])
 
     def test_one_teacher_one_class_no_match_because_subject(self) -> None:
         teachers_dict = {
             "teacher1": {
                 "seniority": 3,
-                "subject_he_know_how_to_teach": [{"subject": "Arq1", "role": ["Theory"]}],
+                "subject_he_know_how_to_teach": [{"subject": "Arq1", "role": ["Teórico"]}],
                 "available_times": {"Monday": [8, 9, 10]},
                 "weekly_hours_max_work": 10,
             },
@@ -620,29 +622,29 @@ class TestSolveTimetable(unittest.TestCase):
         classes_dict = {
             "class1": {
                 "subject": "Math",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [9]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Monday": [9]}, "num_teachers": 1}],
             }
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
-        self.assertEqual(assignments.matches, {"class1": {"Theory": []}})
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": []}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
-        self.assertEqual(assignments.unassigned, [("class1", "Theory")])
+        self.assertEqual(assignments.unassigned, [("class1", "Teórico")])
         self.assertEqual(assignments.conflicts.teacher_without_any_classes, ["teacher1"])
 
     def test_multiple_teachers_classes(self) -> None:
         teachers_dict = {
             "teacher1": {
                 "seniority": 3,
-                "subject_he_know_how_to_teach": [{"subject": "Arq1", "role": ["Theory"]}],
+                "subject_he_know_how_to_teach": [{"subject": "Arq1", "role": ["Teórico"]}],
                 "available_times": {"Monday": [9, 10], "Tuesday": [9, 10]},
                 "weekly_hours_max_work": 10,
             },
             "teacher2": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "DA2", "role": ["Theory"]},
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "DA2", "role": ["Teórico"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {"Monday": [9, 10], "Tuesday": [9, 10]},
                 "weekly_hours_max_work": 10,
@@ -651,23 +653,23 @@ class TestSolveTimetable(unittest.TestCase):
         classes_dict = {
             "class1": {
                 "subject": "Arq1",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [9]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Monday": [9]}, "num_teachers": 1}],
             },
             "class2": {
                 "subject": "DA2",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [10]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Monday": [10]}, "num_teachers": 1}],
             },
             "class3": {
                 "subject": "DA2",
-                "subClasses": [{"role": "Theory", "times": {"Tuesday": [9]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Tuesday": [9]}, "num_teachers": 1}],
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
-        self.assertIn(assignments.matches["class1"]["Theory"][0], ["teacher1", "teacher2"])
-        self.assertEqual(assignments.matches["class2"], {"Theory": ["teacher2"]})
-        self.assertIn(assignments.matches["class3"]["Theory"][0], ["teacher1", "teacher2"])
+        self.assertIn(assignments.matches["class1"]["Teórico"][0], ["teacher1", "teacher2"])
+        self.assertEqual(assignments.matches["class2"], {"Teórico": ["teacher2"]})
+        self.assertIn(assignments.matches["class3"]["Teórico"][0], ["teacher1", "teacher2"])
         self.assertEqual(assignments.unassigned, [])
         self.check_no_conflicts(assignments.conflicts)
 
@@ -676,8 +678,8 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
-                    {"subject": "Agil1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
+                    {"subject": "Agil1", "role": ["Teórico"]},
                 ],
                 "available_times": {"Monday": [9]},
                 "weekly_hours_max_work": 10,
@@ -685,7 +687,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher2": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {"Monday": [9]},
                 "weekly_hours_max_work": 10,
@@ -694,35 +696,35 @@ class TestSolveTimetable(unittest.TestCase):
         classes_dict = {
             "class1": {
                 "subject": "Arq1",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [9]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Monday": [9]}, "num_teachers": 1}],
             },
             "class2": {
                 "subject": "Agil1",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [9]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Monday": [9]}, "num_teachers": 1}],
             },
             "class3": {
                 "subject": "Agil1",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [9]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Monday": [9]}, "num_teachers": 1}],
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
-        self.assertEqual(assignments.matches["class1"]["Theory"], ["teacher2"])
+        self.assertEqual(assignments.matches["class1"]["Teórico"], ["teacher2"])
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
-        # 2 possibilities: class2: {"Theory": ["teacher1"]} or class3: {"Theory": ["teacher1"]}
-        if assignments.matches["class2"]["Theory"] == ["teacher1"]:
-            self.assertEqual(assignments.unassigned, [("class3", "Theory")])
+        # 2 possibilities: class2: {"Teórico": ["teacher1"]} or class3: {"Teórico": ["teacher1"]}
+        if assignments.matches["class2"]["Teórico"] == ["teacher1"]:
+            self.assertEqual(assignments.unassigned, [("class3", "Teórico")])
         else:
-            self.assertEqual(assignments.unassigned, [("class2", "Theory")])
-            self.assertEqual(assignments.matches["class3"]["Theory"], ["teacher1"])
+            self.assertEqual(assignments.unassigned, [("class2", "Teórico")])
+            self.assertEqual(assignments.matches["class3"]["Teórico"], ["teacher1"])
 
     def test_multiple_teachers_max_hours(self) -> None:
         teachers_dict = {
             "teacher1": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
-                    {"subject": "Agil1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
+                    {"subject": "Agil1", "role": ["Teórico"]},
                 ],
                 "available_times": {"Monday": [8, 9, 10], "Tuesday": [9, 10], "Wednesday": [9, 10]},
                 "weekly_hours_max_work": 5,
@@ -730,7 +732,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher2": {
                 "seniority": 3,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory"]},
+                    {"subject": "Arq1", "role": ["Teórico"]},
                 ],
                 "available_times": {"Monday": [9, 10]},
                 "weekly_hours_max_work": 5,
@@ -739,35 +741,35 @@ class TestSolveTimetable(unittest.TestCase):
         classes_dict = {
             "class1": {
                 "subject": "Arq1",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [9]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Monday": [9]}, "num_teachers": 1}],
             },
             "class2": {
                 "subject": "Agil1",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [8, 9, 10]}, "num_teachers": 1}
+                    {"role": "Teórico", "times": {"Monday": [8, 9, 10]}, "num_teachers": 1}
                 ],
             },
             "class3": {
                 "subject": "Agil1",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Tuesday": [9, 10]}, "num_teachers": 1}
+                    {"role": "Teórico", "times": {"Tuesday": [9, 10]}, "num_teachers": 1}
                 ],
             },
             "class4": {
                 "subject": "Agil1",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Wednesday": [9, 10]}, "num_teachers": 1}
+                    {"role": "Teórico", "times": {"Wednesday": [9, 10]}, "num_teachers": 1}
                 ],
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         assignments = solve_timetable(teachers, classes)
-        self.assertEqual(assignments.matches["class1"], {"Theory": ["teacher2"]})
+        self.assertEqual(assignments.matches["class1"], {"Teórico": ["teacher2"]})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(len(assignments.unassigned), 1)
         self.assertIn(
             assignments.unassigned[0],
-            [("class2", "Theory"), ("class3", "Theory"), ("class4", "Theory")],
+            [("class2", "Teórico"), ("class3", "Teórico"), ("class4", "Teórico")],
         )
 
     def test_select_group_of_2_over_seniority_on_subject_of_3(self) -> None:
@@ -775,7 +777,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Technology"]},
+                    {"subject": "Arq1", "role": ["Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -783,21 +785,21 @@ class TestSolveTimetable(unittest.TestCase):
                 "weekly_hours_max_work": 10,
                 "groups": [
                     {
-                        "my_role": ["Technology"],
+                        "my_role": ["Tecnología"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher2", "role": ["Technology"]}],
+                        "other_teacher": [{"teacher": "teacher2", "role": ["Tecnología"]}],
                     },
                     {
-                        "my_role": ["Technology"],
+                        "my_role": ["Tecnología"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher3", "role": ["Theory"]}],
+                        "other_teacher": [{"teacher": "teacher3", "role": ["Teórico"]}],
                     },
                 ],
             },
             "teacher2": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Technology"]},
+                    {"subject": "Arq1", "role": ["Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -805,21 +807,21 @@ class TestSolveTimetable(unittest.TestCase):
                 "weekly_hours_max_work": 10,
                 "groups": [
                     {
-                        "my_role": ["Technology"],
+                        "my_role": ["Tecnología"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher1", "role": ["Technology"]}],
+                        "other_teacher": [{"teacher": "teacher1", "role": ["Tecnología"]}],
                     },
                     {
-                        "my_role": ["Technology"],
+                        "my_role": ["Tecnología"],
                         "subject": "Arq1",
-                        "other_teacher": [{"teacher": "teacher3", "role": ["Theory"]}],
+                        "other_teacher": [{"teacher": "teacher3", "role": ["Teórico"]}],
                     },
                 ],
             },
             "teacher3": {
                 "seniority": 8,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Theory", "Technology"]},
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -828,7 +830,7 @@ class TestSolveTimetable(unittest.TestCase):
             },
             "teacher4": {
                 "seniority": 2,
-                "subject_he_know_how_to_teach": [{"subject": "Arq1", "role": ["Theory"]}],
+                "subject_he_know_how_to_teach": [{"subject": "Arq1", "role": ["Teórico"]}],
                 "available_times": {"Monday": [9, 10, 11], "Tuesday": [9, 10, 11]},
                 "weekly_hours_max_work": 10,
             },
@@ -837,8 +839,8 @@ class TestSolveTimetable(unittest.TestCase):
             "class1": {
                 "subject": "Arq1",
                 "subClasses": [
-                    {"role": "Technology", "times": {"Monday": [9, 10, 11]}, "num_teachers": 2},
-                    {"role": "Theory", "times": {"Tuesday": [9, 10, 11]}, "num_teachers": 1},
+                    {"role": "Tecnología", "times": {"Monday": [9, 10, 11]}, "num_teachers": 2},
+                    {"role": "Teórico", "times": {"Tuesday": [9, 10, 11]}, "num_teachers": 1},
                 ],
             },
         }
@@ -846,7 +848,7 @@ class TestSolveTimetable(unittest.TestCase):
         assignments = solve_timetable(teachers, classes)
         self.assertEqual(
             assignments.matches,
-            {"class1": {"Technology": ["teacher1", "teacher2"], "Theory": ["teacher4"]}},
+            {"class1": {"Tecnología": ["teacher1", "teacher2"], "Teórico": ["teacher4"]}},
         )
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
@@ -858,7 +860,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher1": {
                 "seniority": 8,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Technology"]},
+                    {"subject": "Arq1", "role": ["Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -868,7 +870,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher2": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Technology"]},
+                    {"subject": "Arq1", "role": ["Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -878,7 +880,7 @@ class TestSolveTimetable(unittest.TestCase):
             "teacher3": {
                 "seniority": 1,
                 "subject_he_know_how_to_teach": [
-                    {"subject": "Arq1", "role": ["Technology"]},
+                    {"subject": "Arq1", "role": ["Tecnología"]},
                 ],
                 "available_times": {
                     "Monday": [9, 10, 11],
@@ -890,7 +892,7 @@ class TestSolveTimetable(unittest.TestCase):
             "class1": {
                 "subject": "Arq1",
                 "subClasses": [
-                    {"role": "Technology", "times": {"Monday": [9, 10, 11]}, "num_teachers": 2},
+                    {"role": "Tecnología", "times": {"Monday": [9, 10, 11]}, "num_teachers": 2},
                 ],
             },
         }
@@ -899,7 +901,7 @@ class TestSolveTimetable(unittest.TestCase):
         assignments = solve_timetable(teachers, classes, teacher_names_with_classes)
         self.assertEqual(
             assignments.matches,
-            {"class1": {"Technology": ["teacher2", "teacher3"]}},
+            {"class1": {"Tecnología": ["teacher2", "teacher3"]}},
         )
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])

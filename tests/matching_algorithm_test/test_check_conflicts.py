@@ -10,7 +10,7 @@ class TestCheckConflicts(unittest.TestCase):
         self.teachers = {
             "teacher1": {
                 "seniority": 2,
-                "subject_he_know_how_to_teach": [{"subject": "Math", "role": ["Theory"]}],
+                "subject_he_know_how_to_teach": [{"subject": "Math", "role": ["Teórico"]}],
                 "available_times": {"Monday": [9, 10], "Tuesday": [9, 10]},
                 "weekly_hours_max_work": 10,
             }
@@ -19,15 +19,17 @@ class TestCheckConflicts(unittest.TestCase):
             "class1": {
                 "subject": "Math",
                 "subClasses": [
-                    {"role": "Theory", "times": {"Monday": [9], "Tuesday": [9]}, "num_teachers": 1}
+                    {"role": "Teórico", "times": {"Monday": [9], "Tuesday": [9]}, "num_teachers": 1}
                 ],
             },
             "class2": {
                 "subject": "Math",
-                "subClasses": [{"role": "Theory", "times": {"Monday": [9]}, "num_teachers": 1}],
+                "subClasses": [{"role": "Teórico", "times": {"Monday": [9]}, "num_teachers": 1}],
             },
         }
-        self.assignment: dict[str, dict[RoleType, list[str]]] = {"class1": {"Theory": ["teacher1"]}}
+        self.assignment: dict[str, dict[RoleType, list[str]]] = {
+            "class1": {"Teórico": ["teacher1"]}
+        }
 
     def test_no_conflicts(self) -> None:
         teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
@@ -39,7 +41,7 @@ class TestCheckConflicts(unittest.TestCase):
         self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 
     def test_teacher_cannot_teach_class_because_of_role(self) -> None:
-        self.teachers["teacher1"]["subject_he_know_how_to_teach"][0]["role"] = ["Technology"]  # type: ignore
+        self.teachers["teacher1"]["subject_he_know_how_to_teach"][0]["role"] = ["Tecnología"]  # type: ignore
         teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
         self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 
@@ -49,7 +51,7 @@ class TestCheckConflicts(unittest.TestCase):
         self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 
     def test_teacher_teach_more_than_one_class_at_same_time(self) -> None:
-        self.assignment["class2"] = {"Theory": ["teacher1"]}
+        self.assignment["class2"] = {"Teórico": ["teacher1"]}
         teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
         self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 

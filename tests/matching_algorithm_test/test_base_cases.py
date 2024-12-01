@@ -907,6 +907,43 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertEqual(assignments.unassigned, [])
         self.check_no_conflicts(assignments.conflicts)
 
+    def test_teacher_same_class_at_same_time(self) -> None:
+        teachers_dict = {
+            "teacher1": {
+                "seniority": 8,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Teórico"]},
+                ],
+                "available_times": {
+                    "Monday": [5],
+                },
+                "weekly_hours_max_work": 80,
+            },
+        }
+        classes_dict = {
+            "class1": {
+                "subject": "Arq1",
+                "subClasses": [
+                    {"role": "Teórico", "times": {"Monday": [5]}, "num_teachers": 1},
+                ],
+            },
+            "class2": {
+                "subject": "Arq1",
+                "subClasses": [
+                    {"role": "Teórico", "times": {"Monday": [5]}, "num_teachers": 1},
+                ],
+            },
+        }
+        teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
+        assignments = solve_timetable(teachers, classes, [])
+        self.assertEqual(
+            assignments.matches,
+            {"class1": {"Teórico": []}, "class2": {"Teórico": ["teacher1"]}},
+        )
+        self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
+        self.assertEqual(assignments.unassigned, [("class1", "Teórico")])
+        self.check_no_conflicts(assignments.conflicts, ["classes_without_teachers"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -158,7 +158,7 @@ def solve_timetable(
     # A teacher can't teach multiple classes at the same time
     for teacher_name in teachers:
         for day in weekdays:
-            for time in range(8, 24):  # Using the constrained range from your model
+            for time in range(0, 24):  # Using the constrained range from your model
                 conflicting_subclasses = [
                     (class_name, subclass.role, subclass.num_teachers)
                     for class_name, class_info in classes.items()

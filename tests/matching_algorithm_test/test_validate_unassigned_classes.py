@@ -22,7 +22,7 @@ teachers: dict = {
     },
     "teacher3": {
         "seniority": 2,
-        "subject_he_know_how_to_teach": [{"subject": "Science", "role": ["Practice"]}],
+        "subject_he_know_how_to_teach": [{"subject": "Science", "role": ["Technology"]}],
         "available_times": {"Monday": [9, 10], "Wednesday": [10]},
         "weekly_hours_max_work": 5,
     },
@@ -43,14 +43,14 @@ classes: dict = {
     },
     "class3": {
         "subject": "Science",
-        "subClasses": [{"role": "Practice", "times": {"Monday": [9]}, "num_teachers": 1}],
+        "subClasses": [{"role": "Technology", "times": {"Monday": [9]}, "num_teachers": 1}],
     },
 }
 
 result: dict[str, dict[RoleType, list[str]]] = {
     "class1": {"Theory": ["teacher1"]},
     "class2": {"Theory": []},
-    "class3": {"Practice": ["teacher3"]},
+    "class3": {"Technology": ["teacher3"]},
 }
 
 unassigned: list[tuple[str, RoleType]] = [("class2", "Theory")]

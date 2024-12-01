@@ -39,7 +39,7 @@ class TestCheckConflicts(unittest.TestCase):
         self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 
     def test_teacher_cannot_teach_class_because_of_role(self) -> None:
-        self.teachers["teacher1"]["subject_he_know_how_to_teach"][0]["role"] = ["Practice"]  # type: ignore
+        self.teachers["teacher1"]["subject_he_know_how_to_teach"][0]["role"] = ["Technology"]  # type: ignore
         teachers, classes = convert_teachers_and_classes_dict_to_model(self.teachers, self.classes)
         self.assertTrue(are_conflicts(self.assignment, teachers, classes))
 

@@ -16,15 +16,15 @@ from src.matching_algorithm.quality_assurance import (
 from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 subjects = [
-    {"subject": "Arq1", "role": ["Theory", "Practice"]},
-    {"subject": "Arq2", "role": ["Theory", "Practice"]},
+    {"subject": "Arq1", "role": ["Theory", "Technology"]},
+    {"subject": "Arq2", "role": ["Theory", "Technology"]},
     {"subject": "Agil1", "role": ["Theory"]},
     {"subject": "Agil2", "role": ["Theory"]},
     {"subject": "IngSoft1", "role": ["Theory"]},
-    {"subject": "Da1", "role": ["Theory", "Practice"]},
-    {"subject": "Da2", "role": ["Theory", "Practice"]},
-    {"subject": "Algorithms", "role": ["Theory", "Practice"]},
-    {"subject": "Algorithms2", "role": ["Theory", "Practice"]},
+    {"subject": "Da1", "role": ["Theory", "Technology"]},
+    {"subject": "Da2", "role": ["Theory", "Technology"]},
+    {"subject": "Algorithms", "role": ["Theory", "Technology"]},
+    {"subject": "Algorithms2", "role": ["Theory", "Technology"]},
     {"subject": "RandomSubject", "role": ["Theory"]},
 ]
 

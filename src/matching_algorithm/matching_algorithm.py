@@ -216,6 +216,8 @@ def solve_timetable(
 
                     # Check other teachers' assignments
                     for other_teacher_info in group.other_teacher:
+                        if other_teacher_info.teacher not in teachers:
+                            continue
                         other_teacher = other_teacher_info.teacher
                         other_teacher_assignments = []
                         for subclass in class_info.subClasses:

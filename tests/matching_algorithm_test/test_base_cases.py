@@ -849,6 +849,58 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertEqual(assignments.conflicts.teacher_without_any_classes, ["teacher3"])
         self.check_no_conflicts(assignments.conflicts, ["teacher_without_any_classes"])
 
+    def test_teacher_with_class_already_assigned(self) -> None:
+        teachers_dict = {
+            "teacher1": {
+                "seniority": 8,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Practice"]},
+                ],
+                "available_times": {
+                    "Monday": [9, 10, 11],
+                },
+                "weekly_hours_max_work": 10,
+            },
+            "teacher2": {
+                "seniority": 1,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Practice"]},
+                ],
+                "available_times": {
+                    "Monday": [9, 10, 11],
+                },
+                "weekly_hours_max_work": 10,
+            },
+            "teacher3": {
+                "seniority": 1,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Practice"]},
+                ],
+                "available_times": {
+                    "Monday": [9, 10, 11],
+                },
+                "weekly_hours_max_work": 10,
+            },
+        }
+        classes_dict = {
+            "class1": {
+                "subject": "Arq1",
+                "subClasses": [
+                    {"role": "Practice", "times": {"Monday": [9, 10, 11]}, "num_teachers": 2},
+                ],
+            },
+        }
+        teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
+        teacher_names_with_classes = ["teacher1"]
+        assignments = solve_timetable(teachers, classes, teacher_names_with_classes)
+        self.assertEqual(
+            assignments.matches,
+            {"class1": {"Practice": ["teacher2", "teacher3"]}},
+        )
+        self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
+        self.assertEqual(assignments.unassigned, [])
+        self.check_no_conflicts(assignments.conflicts)
+
 
 if __name__ == "__main__":
     unittest.main()

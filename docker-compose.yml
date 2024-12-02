@@ -5,13 +5,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8000:8000" 
     develop:
       watch:
         - action: sync
           path: ./
           target: /app
-    #     - action: rebuild
-    #       path: ./requirements.txt
+        - action: rebuild
+          path: ./requirements.txt
     tty: true  # Allow the container to run interactively
     # stdin_open: true  # Keep STDIN open for interactive mode (bash)
     # entrypoint: /bin/bash  # Set entrypoint to bash for terminal access

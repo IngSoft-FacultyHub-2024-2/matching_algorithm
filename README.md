@@ -39,3 +39,8 @@ docker run -it my-python-app
 ```
 pip freeze > requirements.txt
 ```
+
+### Run api
+```
+uvicorn src.app:app --reload
+```

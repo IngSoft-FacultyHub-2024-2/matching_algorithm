@@ -1,6 +1,31 @@
 # matching_algorithm
 
-# Desarrollar en docker
+# For Developers
+install black formatter:
+```
+pip install black
+```
+
+install pylint: (linter)
+```
+pip install pylint
+```
+
+install isort: (sort the imports)
+```
+pip install isort
+```
+
+install pre-commit
+```
+pip install pre-commit
+pre-commit install
+```
+
+Before each commit the precomit will run automatically black, isort and pylint over your code.
+
+
+# Develop on docker
 
 Requirements:
 - Docker installed

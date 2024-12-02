@@ -7,7 +7,7 @@ from pathlib import Path
 root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
-from src.matching_algorithm.matching_algorithm import solve_timetable
+from src.matching_algorithm.matching_algorithm import Module, solve_timetable
 from src.matching_algorithm.quality_assurance import (
     are_conflicts,
     check_solution,
@@ -27,6 +27,10 @@ subjects = [
     {"subject": "Algorithms2", "role": ["Teórico", "Tecnología"]},
     {"subject": "RandomSubject", "role": ["Teórico"]},
 ]
+
+
+def get_modules() -> list[Module]:
+    return [Module(id=i, time=f"{i}:00 - {i+1}:00", turn="test") for i in range(24)]
 
 
 class TeachersGenerator:
@@ -185,8 +189,9 @@ if __name__ == "__main__":
 
     # Now, let's solve the timetable
     start_time = time.time()
+    modules = get_modules()
     teachers, classes = convert_teachers_and_classes_dict_to_model(teachers, classes)
-    assignments = solve_timetable(teachers, classes)
+    assignments = solve_timetable(teachers, classes, modules)
     algorithm_duration = time.time() - start_time
     print(f"Results:")
     print(assignments.matches)

@@ -6,7 +6,7 @@ from typing import Optional
 root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
-from src.matching_algorithm import ConflictModel, solve_timetable
+from src.matching_algorithm import ConflictModel, Module, solve_timetable
 from src.matching_algorithm.models import PartiallyUnassignedConflict
 from src.matching_algorithm.quality_assurance import are_conflicts
 from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
@@ -27,11 +27,15 @@ class TestSolveTimetable(unittest.TestCase):
         if "partially_unassigned" not in except_conflict:
             self.assertEqual(conflicts.partially_unassigned, [])
 
+    def get_modules(self) -> list[Module]:
+        return [Module(id=i, time=f"{i}:00 - {i+1}:00", turn="test") for i in range(24)]
+
     def test_no_teachers_no_classes(self) -> None:
         teachers_dict: dict = {}
         classes_dict: dict = {}
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches, {})
         self.assertEqual(assignments.unassigned, [])
         self.check_no_conflicts(assignments.conflicts)
@@ -56,7 +60,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1"]}})
         self.assertEqual(assignments.unassigned, [])
@@ -83,7 +88,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(
             assignments.matches, {"class1": {"Teórico": ["teacher1"], "Tecnología": []}}
@@ -111,7 +117,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(
             assignments.matches, {"class1": {"Teórico": ["teacher1"], "Tecnología": []}}
@@ -142,7 +149,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1"]}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
@@ -186,7 +194,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(
             assignments.matches,
             {"class1": {"Teórico": ["teacher1"]}, "class2": {"Teórico": ["teacher1"]}},
@@ -249,7 +258,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1", "teacher2"]}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
@@ -310,7 +320,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher2", "teacher3"]}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
@@ -374,7 +385,8 @@ class TestSolveTimetable(unittest.TestCase):
         }
 
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1", "teacher2"]}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [])
@@ -444,7 +456,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(
             assignments.matches, {"class1": {"Teórico": ["teacher2"], "Tecnología": ["teacher1"]}}
         )
@@ -514,7 +527,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(
             assignments.matches, {"class1": {"Teórico": ["teacher2"], "Tecnología": ["teacher3"]}}
         )
@@ -551,7 +565,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1"]}})
         self.assertEqual(assignments.unassigned, [])
         self.assertEqual(
@@ -602,7 +617,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(
             assignments.matches, {"class1": {"Teórico": []}, "class2": {"Teórico": ["teacher1"]}}
         )
@@ -626,7 +642,8 @@ class TestSolveTimetable(unittest.TestCase):
             }
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches, {"class1": {"Teórico": []}})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(assignments.unassigned, [("class1", "Teórico")])
@@ -665,7 +682,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertIn(assignments.matches["class1"]["Teórico"][0], ["teacher1", "teacher2"])
         self.assertEqual(assignments.matches["class2"], {"Teórico": ["teacher2"]})
@@ -708,7 +726,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches["class1"]["Teórico"], ["teacher2"])
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         # 2 possibilities: class2: {"Teórico": ["teacher1"]} or class3: {"Teórico": ["teacher1"]}
@@ -763,7 +782,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(assignments.matches["class1"], {"Teórico": ["teacher2"]})
         self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
         self.assertEqual(len(assignments.unassigned), 1)
@@ -845,7 +865,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules)
         self.assertEqual(
             assignments.matches,
             {"class1": {"Tecnología": ["teacher1", "teacher2"], "Teórico": ["teacher4"]}},
@@ -898,7 +919,8 @@ class TestSolveTimetable(unittest.TestCase):
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
         teacher_names_with_classes = ["teacher1"]
-        assignments = solve_timetable(teachers, classes, teacher_names_with_classes)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules, teacher_names_with_classes)
         self.assertEqual(
             assignments.matches,
             {"class1": {"Tecnología": ["teacher2", "teacher3"]}},
@@ -935,7 +957,8 @@ class TestSolveTimetable(unittest.TestCase):
             },
         }
         teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
-        assignments = solve_timetable(teachers, classes, [])
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules, [])
         self.assertEqual(
             assignments.matches,
             {"class1": {"Teórico": []}, "class2": {"Teórico": ["teacher1"]}},

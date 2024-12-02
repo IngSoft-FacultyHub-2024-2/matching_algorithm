@@ -8,5 +8,5 @@ class OtherTeacherGroup(BaseModel):
     
 class GroupModel(BaseModel):
     my_role: list[RoleType]  
-    subject: constr(min_length=1)  
+    subject: str 
     other_teacher: list[OtherTeacherGroup]  

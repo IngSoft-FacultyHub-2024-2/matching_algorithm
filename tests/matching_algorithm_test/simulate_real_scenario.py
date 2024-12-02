@@ -7,11 +7,11 @@ import json
 root_folder = Path(__file__, "../../..").resolve()
 sys.path.append(str(root_folder))
 
-from src.matching_algorithm.matching_algorithm import solve_timetable
+from src.matching_algorithm.matching_algorithm import solve_timetable, TeacherModel, ClassModel
 from src.matching_algorithm.quality_assurance import are_conflicts
 from src.matching_algorithm.quality_assurance import diagnose_infeasibility
 from src.matching_algorithm.quality_assurance import check_solution
-
+from tests.matching_algorithm_test.util import convert_teachers_and_classes_dict_to_model
 
 subjects = [
     {"subject": "Arq1", "role": ["Theory", "Practice"]},
@@ -28,7 +28,7 @@ subjects = [
 
 class TeachersGenerator():
     # Randomly select available times between 8-12 or 17-23 for each day
-    def generate_available_times(self):
+    def generate_available_times(self) -> dict:
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         hours = list(range(8, 12)) + list(range(17, 24))
         available_times = {}
@@ -37,7 +37,7 @@ class TeachersGenerator():
                 available_times[day] = sorted(random.sample(hours, random.randint(1, 6)))
         return available_times
 
-    def create_symmetric_groups(self, teachers, teacher_name, other_teacher_name):
+    def create_symmetric_groups(self, teachers: dict[str, dict], teacher_name: str, other_teacher_name: str) -> None:
         if not teachers[teacher_name].get("groups"):
             teachers[teacher_name]["groups"] = []
         
@@ -62,7 +62,7 @@ class TeachersGenerator():
         })
 
     # Generate teachers
-    def create_teachers(self, num_teachers):
+    def create_teachers(self, num_teachers: int) -> dict:   
         teachers = {}
         
         for i in range(1, num_teachers + 1):
@@ -91,7 +91,7 @@ class TeachersGenerator():
 
 class ClassesGenerator():
     # Function to generate continuous times for a sub-class with up to 3 hours per day
-    def generate_continuous_times(self):
+    def generate_continuous_times(self) -> dict:
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         selected_days = random.sample(days, random.randint(1, 2))  # Choose 1 or 2 days
         
@@ -112,9 +112,9 @@ class ClassesGenerator():
         return times
 
     # Generate sub-classes for a given subject with continuous hours and the 3-hour per day limit
-    def generate_sub_classes(self, subject_roles):
+    def generate_sub_classes(self, subject_roles: list[str]) -> list: 
         sub_classes = []
-        total_hours_used = {}  # To track the number of hours used on each day
+        total_hours_used: dict = {}  # To track the number of hours used on each day
         
         for role in subject_roles:
             class_times = self.generate_continuous_times()
@@ -136,7 +136,7 @@ class ClassesGenerator():
         return sub_classes
 
     # Generate classes
-    def create_classes(self, num_classes):
+    def create_classes(self, num_classes: int) -> dict:
         classes = {}
         
         for i in range(1, num_classes + 1):
@@ -171,22 +171,23 @@ if __name__ == "__main__":
 
     # Now, let's solve the timetable
     start_time = time.time()
-    result, unassigned, conflicts = solve_timetable(teachers, classes)
+    teachers, classes = convert_teachers_and_classes_dict_to_model(teachers, classes)
+    assignments = solve_timetable(teachers, classes)
     algorithm_duration = time.time() - start_time
     print(f"Results:")
-    print(result)
+    print(assignments.matches)
     print(f"Conflicts:")
-    print(conflicts)
-    print("unassigned: ", unassigned)
+    print(assignments.conflicts)
+    print("unassigned: ", assignments.unassigned)
     print(f"Algorithm duration: {algorithm_duration} seconds")
-    assert not are_conflicts(result, teachers, classes), "Error, there are conflicts in the timetable"
+    assert not are_conflicts(assignments.matches, teachers, classes), "Error, there are conflicts in the timetable"
     issues = diagnose_infeasibility(teachers, classes)
     for issue in issues:
         print(f"- {issue}")
 
-    check_solution(teachers, classes, result, unassigned, partially_unassigned=conflicts["partially_unassigned"])   
+    check_solution(teachers, classes, assignments)   
 
     results_path = root_folder / "json_input_tests"
     results_path.mkdir(exist_ok=True)
-    json.dump(teachers, open(results_path.joinpath("teachers.json"), "w"), indent=4)
-    json.dump(classes, open(results_path.joinpath("classes.json"), "w"), indent=4)
+    json.dump({name: teacher.dict() for name, teacher in teachers.items()}, open(results_path.joinpath("teachers.json"), "w"), indent=4)
+    json.dump({name: class_.dict() for name, class_ in classes.items()}, open(results_path.joinpath("classes.json"), "w"), indent=4)

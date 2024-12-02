@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter
 
 from .DTO.in_models.assignment_request_model import AssignmentRequestModel
-from src.matching_algorithm import solve_timetable
+from src.matching_algorithm import solve_timetable, Assignments
 router = APIRouter()
 
 @router.post("/", summary="Assign teachers to classes",
@@ -10,10 +10,10 @@ router = APIRouter()
             #       200: {"description": "Successful assignment"},
             #       400: {"description": "Bad Request"},
             #   }
+             response_model=Assignments
             )
-async def assign_teachers_to_classes(data: AssignmentRequestModel):
-    data = data.dict()
-    teachers = data["teachers"]
-    classes = data["classes"]
-    result, unassigned, conflicts = solve_timetable(teachers, classes)
-    return {"matches": result, "unassigned": unassigned, "conflicts": conflicts}
+async def assign_teachers_to_classes(data: AssignmentRequestModel) -> Assignments:
+    teachers = data.teachers
+    classes = data.classes
+    return solve_timetable(teachers, classes)
+

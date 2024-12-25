@@ -16,6 +16,7 @@ disable=C0114, # Missing module docstring (missing-module-docstring)
         W1514, # Using open without explicitly specifying an encoding (consider-using-with)
         W0621, # Redefining name from outer scope (redefined-outer-name)
         R0904, # Too many public methods (X/20) (too-many-public-methods)
+        C0302, # Too many lines in module (X) (too-many-lines)
         
 
 

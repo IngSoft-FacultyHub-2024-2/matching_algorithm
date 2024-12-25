@@ -1,11 +1,12 @@
 from ortools.sat.python import cp_model
 
-from .models import Assignments, ClassModel, ConflictModel, TeacherModel
+from .models import Assignments, ClassModel, ConflictModel, Module, TeacherModel
 
 
 def solve_timetable(
     teachers: dict[str, TeacherModel],
     classes: dict[str, ClassModel],
+    modules: list[Module],
     teacher_names_with_classes: list[str] | None = None,
 ) -> Assignments:
     if teacher_names_with_classes is None:
@@ -13,6 +14,7 @@ def solve_timetable(
 
     model = cp_model.CpModel()
 
+    modules_ids = {module.id: module for module in modules}
     weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     # Create variables
     assignments = {}
@@ -158,7 +160,7 @@ def solve_timetable(
     # A teacher can't teach multiple classes at the same time
     for teacher_name in teachers:
         for day in weekdays:
-            for time in range(0, 24):  # Using the constrained range from your model
+            for time in modules_ids:  # Using the constrained range from your model
                 conflicting_subclasses = [
                     (class_name, subclass.role, subclass.num_teachers)
                     for class_name, class_info in classes.items()

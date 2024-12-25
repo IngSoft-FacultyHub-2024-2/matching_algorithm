@@ -22,4 +22,5 @@ async def assign_teachers_to_classes(data: AssignmentRequestModel) -> Assignment
     classes = data.classes
     modules = data.modules
     teacher_names_with_classes = data.teacher_names_with_classes
-    return solve_timetable(teachers, classes, modules, teacher_names_with_classes)
+    preassigned = data.preassigned
+    return solve_timetable(teachers, classes, modules, teacher_names_with_classes, preassigned)

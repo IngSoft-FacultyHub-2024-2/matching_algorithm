@@ -10,3 +10,4 @@ class AssignmentRequestModel(BaseModel):
     classes: Dict[str, ClassModel]
     modules: list[Module]
     teacher_names_with_classes: list[str]
+    preassigned: Dict[str, Dict[str, list[str]]] | None

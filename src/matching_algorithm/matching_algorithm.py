@@ -2,6 +2,13 @@ from ortools.sat.python import cp_model
 
 from .models import Assignments, ClassModel, ConflictModel, Module, TeacherModel
 
+status_map = {
+    cp_model.FEASIBLE: "Feasible",
+    cp_model.INFEASIBLE: "Infeasible",
+    cp_model.MODEL_INVALID: "Model Invalid",
+    cp_model.OPTIMAL: "Optimal",
+    cp_model.UNKNOWN: "Unknown",
+}
 
 def solve_timetable(
     teachers: dict[str, TeacherModel],
@@ -386,7 +393,7 @@ def solve_timetable(
         if teachers_without_classes:
             conflicts.add_teacher_without_any_classes(teachers_without_classes)
 
-        return Assignments(matches=result, unassigned=unassigned, conflicts=conflicts)
+        return Assignments(matches=result, unassigned=unassigned, conflicts=conflicts, status=status_map[status])
     else:
         empty_conflicts = ConflictModel(
             teacher_without_any_classes=[],
@@ -402,4 +409,5 @@ def solve_timetable(
                 for subclass in class_info.subClasses
             ],
             conflicts=empty_conflicts,
+            status=status_map[status]
         )

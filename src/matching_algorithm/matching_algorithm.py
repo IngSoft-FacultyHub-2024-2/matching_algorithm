@@ -2,15 +2,37 @@ from ortools.sat.python import cp_model
 
 from .models import Assignments, ClassModel, ConflictModel, Module, TeacherModel
 
+status_map = {
+    cp_model.FEASIBLE: "Feasible",
+    cp_model.INFEASIBLE: "Infeasible",
+    cp_model.MODEL_INVALID: "Model Invalid",
+    cp_model.OPTIMAL: "Optimal",
+    cp_model.UNKNOWN: "Unknown",
+}
 
 def solve_timetable(
     teachers: dict[str, TeacherModel],
     classes: dict[str, ClassModel],
     modules: list[Module],
     teacher_names_with_classes: list[str] | None = None,
+    pre_assignments: dict[str, dict[str, list[str]]] | None = None,
 ) -> Assignments:
+    """
+    Solve the timetable optimization problem with support for pre-assignments.
+
+    Args:
+        teachers: Dictionary of teacher information
+        classes: Dictionary of class information
+        modules: List of available time modules
+        teacher_names_with_classes: List of teacher names who must have classes
+        pre_assignments: Dictionary of pre-assigned teachers to classes
+                        Format: {class_name: {role: [teacher_names]}}
+    """
+
     if teacher_names_with_classes is None:
         teacher_names_with_classes = []
+    if pre_assignments is None:
+        pre_assignments = {}
 
     model = cp_model.CpModel()
 
@@ -25,6 +47,22 @@ def solve_timetable(
                     assignments[(teacher_name, class_name, subclass.role, i)] = model.NewBoolVar(
                         f"{teacher_name}_{class_name}_{subclass.role}_{i}"
                     )
+
+                    # Handle pre-assignments
+                    if (
+                        class_name in pre_assignments
+                        and subclass.role in pre_assignments[class_name]
+                    ):
+                        pre_assigned_teachers = pre_assignments[class_name][subclass.role]
+                        if teacher_name in pre_assigned_teachers:
+                            # Force this assignment to be 1 if the teacher is pre-assigned
+                            if (
+                                i < len(pre_assigned_teachers)
+                                and teacher_name == pre_assigned_teachers[i]
+                            ):
+                                model.Add(
+                                    assignments[(teacher_name, class_name, subclass.role, i)] == 1
+                                )
 
     # Create 'is_assigned' variables for each subclass
     is_assigned = {}
@@ -355,7 +393,7 @@ def solve_timetable(
         if teachers_without_classes:
             conflicts.add_teacher_without_any_classes(teachers_without_classes)
 
-        return Assignments(matches=result, unassigned=unassigned, conflicts=conflicts)
+        return Assignments(matches=result, unassigned=unassigned, conflicts=conflicts, status=status_map[status])
     else:
         empty_conflicts = ConflictModel(
             teacher_without_any_classes=[],
@@ -371,4 +409,5 @@ def solve_timetable(
                 for subclass in class_info.subClasses
             ],
             conflicts=empty_conflicts,
+            status=status_map[status]
         )

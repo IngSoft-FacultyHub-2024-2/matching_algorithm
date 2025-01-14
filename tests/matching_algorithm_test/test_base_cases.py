@@ -967,6 +967,79 @@ class TestSolveTimetable(unittest.TestCase):
         self.assertEqual(assignments.unassigned, [("class1", "Teórico")])
         self.check_no_conflicts(assignments.conflicts, ["classes_without_teachers"])
 
+    def test_pre_assignments_teachers(self) -> None:
+        teachers_dict = {
+            "teacher1": {
+                "seniority": 2,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
+                ],
+                "available_times": {"Monday": [9, 10]},
+                "weekly_hours_max_work": 10,
+            },
+            "teacher2": {
+                "seniority": 1,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
+                ],
+                "available_times": {"Monday": [9, 10]},
+                "weekly_hours_max_work": 10,
+            },
+        }
+        classes_dict = {
+            "class1": {
+                "subject": "Arq1",
+                "subClasses": [
+                    {"role": "Teórico", "times": {"Monday": [9, 10]}, "num_teachers": 1}
+                ],
+            },
+        }
+        pre_assignments = {"class1": {"Teórico": ["teacher2"]}}
+        teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules, pre_assignments=pre_assignments)
+        self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher2"]}})
+        self.assertEqual(assignments.unassigned, [])
+        self.assertEqual(assignments.conflicts.teacher_without_any_classes, ["teacher1"])
+        self.check_no_conflicts(assignments.conflicts, ["teacher_without_any_classes"])
+
+    def test_pre_assignments_teachers_add_one_more_teacher(self) -> None:
+        teachers_dict = {
+            "teacher1": {
+                "seniority": 2,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
+                ],
+                "available_times": {"Monday": [9, 10]},
+                "weekly_hours_max_work": 10,
+            },
+            "teacher2": {
+                "seniority": 1,
+                "subject_he_know_how_to_teach": [
+                    {"subject": "Arq1", "role": ["Teórico", "Tecnología"]},
+                ],
+                "available_times": {"Monday": [9, 10]},
+                "weekly_hours_max_work": 10,
+            },
+        }
+        classes_dict = {
+            "class1": {
+                "subject": "Arq1",
+                "subClasses": [
+                    {"role": "Teórico", "times": {"Monday": [9, 10]}, "num_teachers": 2}
+                ],
+            },
+        }
+        pre_assignments = {"class1": {"Teórico": ["teacher1"]}}
+        teachers, classes = convert_teachers_and_classes_dict_to_model(teachers_dict, classes_dict)
+        modules = self.get_modules()
+        assignments = solve_timetable(teachers, classes, modules, pre_assignments=pre_assignments)
+        self.assertFalse(are_conflicts(assignments.matches, teachers, classes))
+        self.assertEqual(assignments.matches, {"class1": {"Teórico": ["teacher1", "teacher2"]}})
+        self.assertEqual(assignments.unassigned, [])
+        self.check_no_conflicts(assignments.conflicts)
+
 
 if __name__ == "__main__":
     unittest.main()

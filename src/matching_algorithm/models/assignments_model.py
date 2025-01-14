@@ -67,3 +67,4 @@ class Assignments:
     matches: dict[str, dict[RoleType, list[str]]]
     unassigned: list[tuple[str, RoleType]]
     conflicts: ConflictModel
+    status: str

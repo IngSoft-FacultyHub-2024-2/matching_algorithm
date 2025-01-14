@@ -58,7 +58,7 @@ unassigned: list[tuple[str, RoleType]] = [("class2", "Teórico")]
 
 class TestValidateUnassignedClasses(unittest.TestCase):
     def test_completely_unassigned_classes(self) -> None:
-        assignments = Assignments(copy.deepcopy(result), copy.deepcopy(unassigned), ConflictModel())
+        assignments = Assignments(copy.deepcopy(result), copy.deepcopy(unassigned), ConflictModel(), status="Optimal")
         teachers_dict, classes_dict = convert_teachers_and_classes_dict_to_model(teachers, classes)
         validation_issues = validate_unassigned_classes(teachers_dict, classes_dict, assignments)
         self.assertEqual(len(validation_issues), 1)
@@ -71,7 +71,7 @@ class TestValidateUnassignedClasses(unittest.TestCase):
         self.assertEqual(issue["potential_teachers"][0]["teacher"], "teacher2")
 
     def test_not_partially_unassigned_classes(self) -> None:
-        assignments = Assignments(copy.deepcopy(result), copy.deepcopy(unassigned), ConflictModel())
+        assignments = Assignments(copy.deepcopy(result), copy.deepcopy(unassigned), ConflictModel(), status="Optimal")
         assignments.matches["class2"]["Teórico"] = ["teacher2"]
         teachers_dict, classes_dict = convert_teachers_and_classes_dict_to_model(teachers, classes)
         validation_issues = validate_unassigned_classes(teachers_dict, classes_dict, assignments)
@@ -83,7 +83,7 @@ class TestValidateUnassignedClasses(unittest.TestCase):
         partially_unassigned = [
             {"class_name": "class2", "role": "Teórico", "assigned": 1, "needed": 2}
         ]
-        assignments = Assignments(copy.deepcopy(result), [], ConflictModel(partially_unassigned=partially_unassigned))  # type: ignore
+        assignments = Assignments(copy.deepcopy(result), [], ConflictModel(partially_unassigned=partially_unassigned), status="Optimal")  # type: ignore
         teachers_dict, classes_dict = convert_teachers_and_classes_dict_to_model(teachers, classes)
         validation_issues = validate_unassigned_classes(teachers_dict, classes_dict, assignments)
         self.assertEqual(len(validation_issues), 1)
@@ -99,7 +99,7 @@ class TestValidateUnassignedClasses(unittest.TestCase):
     def test_no_issues_all_classes_assigned(self) -> None:
         classes["class2"]["subClasses"][0]["num_teachers"] = 1
         result["class2"]["Teórico"] = ["teacher2"]
-        assignments = Assignments(copy.deepcopy(result), [], ConflictModel())
+        assignments = Assignments(copy.deepcopy(result), [], ConflictModel(), status="Optimal")
         teachers_dict, classes_dict = convert_teachers_and_classes_dict_to_model(teachers, classes)
         validation_issues = validate_unassigned_classes(teachers_dict, classes_dict, assignments)
         self.assertEqual(len(validation_issues), 0)
@@ -107,7 +107,7 @@ class TestValidateUnassignedClasses(unittest.TestCase):
     def test_no_issues_no_one_can_teach_because_subject_he_know(self) -> None:
         teachers_without_teacher2 = copy.deepcopy(teachers)
         del teachers_without_teacher2["teacher2"]
-        assignments = Assignments(copy.deepcopy(result), [], ConflictModel())
+        assignments = Assignments(copy.deepcopy(result), [], ConflictModel(), status="Optimal")
         teachers_without_teacher2, classes_dict = convert_teachers_and_classes_dict_to_model(
             teachers_without_teacher2, classes
         )
@@ -123,7 +123,7 @@ class TestValidateUnassignedClasses(unittest.TestCase):
             {"subject": "Math", "role": ["Teórico"]}
         )
         teachers_without_teacher2["teacher3"]["weekly_hours_max_work"] = 2
-        assignments = Assignments(copy.deepcopy(result), [], ConflictModel())
+        assignments = Assignments(copy.deepcopy(result), [], ConflictModel(), status="Optimal")
         teachers_without_teacher2, classes_dict = convert_teachers_and_classes_dict_to_model(
             teachers_without_teacher2, classes
         )

@@ -1,71 +1,104 @@
-# matching_algorithm
+# Faculty Hub Backend Algoritmo
 
-# For Developers
-install black formatter:
+Este repositorio contiene el backend algoritmo de la plataforma Faculty Hub, implementado en Python usando FastAPI. Se encarga de realizar la asignación óptima de docentes a dictados utilizando la librería OR-Tools de Google.
+
+## Tecnologías utilizadas
+
+- Python
+- FastAPI
+- OR-Tools (para la optimización de asignaciones)
+- Docker (para contenerización)
+
+## Herramientas de desarrollo
+Para garantizar la consistencia y calidad del código, utiliza las siguientes herramientas:
+
+### Formateador Black
+
+Instalar el formateador Black:
 ```
 pip install black
 ```
 
-install pylint: (linter)
+### Linter Pylint
+
+Instalar pylint para análisis estático de código:
 ```
 pip install pylint
 ```
 
-install isort: (sort the imports)
+### Ordenador de imports isort
+
+Instalar isort para ordenar los imports automáticamente:
 ```
 pip install isort
 ```
 
-install pre-commit
+### Pre-commit
+
+Instalar pre-commit para ejecutar verificaciones antes de cada commit:
 ```
 pip install pre-commit
 pre-commit install
 ```
 
-Before each commit the precomit will run automatically black, isort and pylint over your code.
+Cada vez que realices un commit, el pre-commit ejecutará automáticamente Black, isort y pylint sobre tu código.
 
+## Desarrollo en Docker
 
-# Develop on docker
+### Requisitos
 
-Requirements:
-- Docker installed
+Tener Docker instalado
 
-Run it with:
+### Ejecutar el servicio en modo observación:
 ```
 docker compose watch
 ```
-#### Open in another terminal a terminal of the container:
+### Abrir una terminal del contenedor en otra terminal:
 
 ```
 docker exec -it <container_name> ../bin/bash
 ```
-Example:
+Ejemplo:
 
 ```
 docker exec -it matching_algorithm-app-1 ../bin/bash
 ```
 
-Stop running it with:
+### Detener el servicio:
 ```
 docker compose down
 ```
 
-### build docker:
+### Construir la imagen Docker:
 ```
 docker build -t my-python-app .
 ```
 
-### docker run:
+### Ejecutar el contenedor:
 ```
 docker run -it my-python-app
 ```
 
-### save the versions of the libraries:
+### Guardar versiones de las librerías:
 ```
 pip freeze > requirements.txt
 ```
 
-### Run api
+### Ejecutar la API
 ```
 uvicorn src.app:app --reload
 ```
+
+### Crear el entorno virtual e instalar dependencias
+```
+python -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+## Despliegue
+
+El backend algoritmo se despliega en AWS utilizando contenedores Docker.
+
+## Colaboración
+
+Para contribuir, sigue el archivo CONTRIBUTING.md y asegúrate de seguir las prácticas de desarrollo establecidas.

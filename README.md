@@ -110,7 +110,7 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-### Correr los test
+### Ejecutar los test
 
 Activate el ambiente de python donde estan intaladas las librerias
 
@@ -118,7 +118,7 @@ Activate el ambiente de python donde estan intaladas las librerias
 python -m unittest discover -s tests
 ```
 
-Para correr los test que simulan casos reales de asignación docentes con datos aleatorios:
+Para ejecutar los test que simulan casos reales de asignación docentes con datos aleatorios:
 
 ```
 python tests/matching_algorithm_test/simulate_real_scenario.py

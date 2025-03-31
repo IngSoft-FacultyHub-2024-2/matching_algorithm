@@ -9,7 +9,6 @@ Utilizamos la metodología GitFlow para el manejo de ramas y versiones. La estru
 - **feature/**: Ramas para el desarrollo de nuevas funcionalidades.
 - **bugfix/**: Ramas para corregir errores detectados.
 - **hotfix/**: Ramas para resolver problemas críticos en producción.
-- **release/**: Ramas para preparar versiones finales antes de su publicación.
 
 Cada desarrollo se realiza en una rama específica que sigue la nomenclatura correspondiente (por ejemplo, `feature/nueva-funcionalidad`). Una vez completado, se crea un Pull Request (PR) hacia `develop`, donde al menos otro miembro del equipo debe aprobarlo.
 
@@ -45,7 +44,7 @@ Para asegurar la calidad del código, seguimos estas prácticas:
 
 ## Proceso de Releases
 
-Utilizamos el versionado semántico (SemVer) siguiendo el esquema X.Y.Z (Major.Minor.Patch). Cada versión se marca con un tag en Git una vez que el PR hacia `develop` ha sido aprobado y la integración es estable. El despliegue se realiza de forma manual en AWS.
+Utilizamos el versionado semántico (SemVer) siguiendo el esquema X.Y.Z (Major.Minor.Patch). Cada versión se marca con un tag en Git con sem-ver según lo que se fuera a integrar. El despliegue se realiza de forma manual en AWS.
 
 ## GitHub Actions
 

@@ -23,3 +23,6 @@ test:
 real_test_scenario: 
 	python tests/matching_algorithm_test/simulate_real_scenario.py
 
+run:
+	uvicorn src.app:app --host 0.0.0.0 --port 8080
+
